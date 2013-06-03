@@ -57,7 +57,7 @@ app.controller("AppCtrl", function($scope, Notifier, $timeout, localStorageServi
         },
         qlearning: {
             alfa: 1,
-            gamma: 0.7,
+            gamma: 0.9,
             qInicial: 0
         },
         repeticiones: 100000,

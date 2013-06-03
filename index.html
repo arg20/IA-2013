@@ -27,6 +27,7 @@
 
     <link rel="stylesheet" type="text/css" href="css/photon-min.css" media="all"/>
     <link rel="stylesheet" type="text/css" href="css/photon-min-part2.css" media="all"/>
+    <link rel="stylesheet" type="text/css" href="css/animate.min.css" media="all"/>
 
 </head>
 <body ng-app="IA2013" class="body" ng-controller="AppCtrl">
@@ -102,7 +103,6 @@
                 <span>Agente:</span>&nbsp;estado
                 <div>
                     <span>{{agente.entrenado? "Entrenado" : "Sin entrenar" }}</span>
-                    <!--<span>{{agente.entrenado && "Entrenado" || "Sin entrenar" }}</span>-->
                     <img ng-src="img/{{agente.entrenado && 'circulo-verde' || 'circulo-rojo' }}.png" alt="Arrow up">
                 </div>
             </li>
@@ -134,17 +134,16 @@
 
 <widget skin="white" widgetVar="widgetEntorno">
     <front titulo="Panel central">
-        <!--<p class="widget-description">Gestor de entornos</p>-->
         <h2 class="login-title" >Gestor de partida!</h2>
         <div class="login-member">
             <p style="margin-top: 0px;">Pódes <a class="flipper" >editar</a> el entorno</p>
-        <a class="btn btn-large btn-success" ng-click="crearEntorno()" ng-hide="isEntornoCreado()" >Crear Entorno!</a>
-        <a class="btn btn-large btn-inverse" ng-click="crearEntorno()" ng-show="isEntornoCreado()" >Recrear Entorno!</a>
+        <a class="btn btn-large btn-success" ng-click="crearEntorno()" ng-hide="isEntornoCreado()" ng-animate="{show:'animated bounceIn'}" >Crear Entorno!</a>
+        <a class="btn btn-large btn-inverse" ng-click="crearEntorno()" ng-show="isEntornoCreado()" ng-animate="{show:'animated flipInY'}" >Recrear Entorno!</a>
         </div>
         <span ng-show="isEntornoCreado()" ng-animate="'fade'" >
             <div class="opciones" style="text-align: center;">Opciones</div>
-            <div class="btn-group"  style="margin-top: 5px;">
-                <a class="btn btn-large btn-primary" ng-click="editor.show()" ng-show="isEntornoCreado()" >Edición</a>
+            <div class="btn-group"  style="margin-top: 5px;" ng-animate="{show:'animated flipInY', hide:'animated fadeOut'}" ng-show="isEntornoCreado()" >
+                <a class="btn btn-large btn-primary" ng-click="editor.show()"  >Edición</a>
                 <a class="btn btn-large btn-danger" href="" ng-click="partida.show()">Jugar!</a>
             </div>
         </span>
@@ -202,148 +201,154 @@
 
     </back>
 </widget>
-<!--<div class="widget-holder blank-widget" ng-hide="entorno">
+<div class="widget-holder blank-widget" ng-hide="entorno">
     <div class="widget-flipper">
         <div class="widget-area" style="padding:0px;">
 
-        </div>
-    </div>
-</div>-->
-<span ng-show="entorno" ng-animate="'fade'">
-                <widget widgetVar="widgetEntrenamiento">
-                    <front titulo="Fase de Entrenamiento" class="task-completion">
-                        <ul>
-                            <li>
-                                Política de selección
-                                <span>{{getPoliticaAgente()}}</span>
-                            </li>
-                            <li>Cantidad de ciclos
-                                <span>{{entrenamiento.repeticiones}}</span>
-                            </li>
-                            <li>
-                                <span><a class=" btn btn-small btn-primary btn-mini"
-                                         ng-click="amnesia()">Amnesia!</a></span>
-                                <span><a class=" btn btn-small btn-danger btn-mini" ng-click="entrenamiento.entrenarTimeout()">Entrenar!</a></span>
-                            </li>
-                            <li class="processed-pct">
-                                Entrenamiento:&nbsp;&nbsp;<span>{{entrenamiento.getPorcentajeEntrenamiento()}}%</span>
-
-                                <div class="progress progress-info progress-striped active">
-                                    <div class="bar" data-target="0" ng-style="entrenamiento.getPorcentajeEntrenamientoBarra()" style="-webkit-transition: width 0s ease; transition: width 0s ease"></div>
-                                </div>
-                            </li>
-                        </ul>
-                    </front>
-                    <back>
-                        <div class="container-fluid widget-settings">
-                            <div class="control-group row-fluid">
-                                <div class="span12">
-                                    <label class="control-label"><strong>Política de planificación</strong></label>
-                                </div>
-                            </div>
-                            <div class="control-group row-fluid">
-                                <div class="span12">
-                                    <div class="controls">
-                                        <select name="multiFilter" style="margin:5px 0px;" class="input-medium"
-                                                ng-model="entrenamiento.politicaSeleccionada.nombre" ng-change="entrenamiento.actualizarPolitica()">
-                                            <option value="greedy">Greedy</option>
-                                            <option value="e-greedy">E-greedy</option>
-                                            <option value="aleatoria">Aleatoria</option>
-                                            <option value="softmax">Softmax</option>
-                                        </select>
-
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="control-group row-fluid">
-                                <div class="span12">
-                                    <label class="control-label"><strong>Q-learning</strong></label>
-                                    <label class="control-label">&nbsp;Alfa&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Gamma&nbsp;&nbsp;&nbsp;&nbsp;Q-inicial</label>
-                                </div>
-                            </div>
-                            <div class="control-group row-fluid">
-                                <div class="span12">
-                                    <div class="controls">
-                                        <input type="text" name="" placeholder="Alfa" class="input-mini"
-                                               style="margin: 0px 3px 0px 0px; " ng-model="entrenamiento.qlearning.alfa"/>
-                                        <input type="text" name="" placeholder="Gamma" class="input-mini"
-                                               style="margin: 0px 3px 0px 0px;" ng-model="entrenamiento.qlearning.gamma"/>
-                                        <input type="text" name="" placeholder="Q-inicial" class="input-mini"
-                                               style="margin: 0px;" ng-model="entrenamiento.qlearning.qInicial"/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="control-group row-fluid">
-                                <div class="span12">
-                                    <label class="control-label" style="margin-top: 5px;"><strong>Configuración específica</strong></label>
-                                </div>
-                            </div>
-                            <div class="control-group row-fluid" ng-show="entrenamiento.politicaSeleccionada.isGreedySeleccionado()">
-                                <div class="span12">
-                                    <div class="controls">
-                                        <input type="text" name="" placeholder="Epsilon" class="input-small"
-                                               style="margin: 0px 0;" ng-model="entrenamiento.politicaSeleccionada.epsilon"/>
-                                        &nbsp;<span style="color:white;" >Iteraciones:</span> <input type="number" name="reps" id="reps" ng-model="entrenamiento.repeticiones" class="input-small"  style="margin: 0px 0;" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="control-group row-fluid" ng-show="entrenamiento.politicaSeleccionada.isEGreedySeleccionado()">
-                                <div class="span12">
-                                    <div class="controls">
-                                        <input type="text" name="" placeholder="Epsilon" class="input-small"
-                                               style="margin: 0px 0;" ng-model="entrenamiento.politicaSeleccionada.epsilon"/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="control-group row-fluid" ng-show="entrenamiento.politicaSeleccionada.isSoftmaxSeleccionado()">
-                                <div class="span12">
-                                    <div class="controls">
-                                        <input type="text" name="" placeholder="tau" class="input-small"
-                                               style="margin: 0px 0;" ng-model="entrenamiento.politicaSeleccionada.tau"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </back>
-                </widget>
-                </span>
-
-<!--
-<div class="widget-holder blank-widget" ng-show="entorno" ng-hide="entrenamiento.completado" >
-    <div class="widget-flipper">
-        <div class="widget-area" style="padding:0px;">
         </div>
     </div>
 </div>
--->
+<div class="widget-holder blank-widget" ng-hide="entorno">
+    <div class="widget-flipper">
+        <div class="widget-area" style="padding:0px;">
 
-<span ng-show="entorno" >
+        </div>
+    </div>
+</div>
+<div class="widget-holder blank-widget" ng-hide="entorno">
+    <div class="widget-flipper">
+        <div class="widget-area" style="padding:0px;">
+
+        </div>
+    </div>
+</div>
+
+<span ng-show="entorno" ng-animate="{show:'animated bounceIn', hide:'animated bounceOut'}">
+    <widget widgetVar="widgetEntrenamiento">
+        <front titulo="Fase de Entrenamiento" class="task-completion">
+            <ul>
+                <li>
+                    Política de selección
+                    <span>{{getPoliticaAgente()}}</span>
+                </li>
+                <li>Cantidad de ciclos
+                    <span>{{entrenamiento.repeticiones}}</span>
+                </li>
+                <li>
+                    <span><a class=" btn btn-small btn-primary btn-mini"
+                             ng-click="amnesia()">Amnesia!</a></span>
+                    <span><a class=" btn btn-small btn-danger btn-mini" ng-click="entrenamiento.entrenarTimeout()">Entrenar!</a></span>
+                </li>
+                <li class="processed-pct">
+                    Entrenamiento:&nbsp;&nbsp;<span>{{entrenamiento.getPorcentajeEntrenamiento()}}%</span>
+
+                    <div class="progress progress-info progress-striped active">
+                        <div class="bar" data-target="0" ng-style="entrenamiento.getPorcentajeEntrenamientoBarra()" style="-webkit-transition: width 0s ease; transition: width 0s ease"></div>
+                    </div>
+                </li>
+            </ul>
+        </front>
+        <back>
+            <div class="container-fluid widget-settings">
+                <div class="control-group row-fluid">
+                    <div class="span12">
+                        <label class="control-label"><strong>Política de planificación</strong></label>
+                    </div>
+                </div>
+                <div class="control-group row-fluid">
+                    <div class="span12">
+                        <div class="controls">
+                            <select name="multiFilter" style="margin:5px 0px;" class="input-medium"
+                                    ng-model="entrenamiento.politicaSeleccionada.nombre" ng-change="entrenamiento.actualizarPolitica()">
+                                <option value="greedy">Greedy</option>
+                                <option value="e-greedy">E-greedy</option>
+                                <option value="aleatoria">Aleatoria</option>
+                                <option value="softmax">Softmax</option>
+                            </select>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group row-fluid">
+                    <div class="span12">
+                        <label class="control-label"><strong>Q-learning</strong></label>
+                        <label class="control-label">&nbsp;Alfa&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Gamma&nbsp;&nbsp;&nbsp;&nbsp;Q-inicial</label>
+                    </div>
+                </div>
+                <div class="control-group row-fluid">
+                    <div class="span12">
+                        <div class="controls">
+                            <input type="text" name="" placeholder="Alfa" class="input-mini"
+                                   style="margin: 0px 3px 0px 0px; " ng-model="entrenamiento.qlearning.alfa"/>
+                            <input type="text" name="" placeholder="Gamma" class="input-mini"
+                                   style="margin: 0px 3px 0px 0px;" ng-model="entrenamiento.qlearning.gamma"/>
+                            <input type="text" name="" placeholder="Q-inicial" class="input-mini"
+                                   style="margin: 0px;" ng-model="entrenamiento.qlearning.qInicial"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group row-fluid">
+                    <div class="span12">
+                        <label class="control-label" style="margin-top: 5px;"><strong>Configuración específica</strong></label>
+                    </div>
+                </div>
+                <div class="control-group row-fluid" ng-show="entrenamiento.politicaSeleccionada.isGreedySeleccionado()">
+                    <div class="span12">
+                        <div class="controls">
+                            <input type="text" name="" placeholder="Epsilon" class="input-small"
+                                   style="margin: 0px 0;" ng-model="entrenamiento.politicaSeleccionada.epsilon"/>
+                            &nbsp;<span style="color:white;" >Iteraciones:</span> <input type="number" name="reps" id="reps" ng-model="entrenamiento.repeticiones" class="input-small"  style="margin: 0px 0;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group row-fluid" ng-show="entrenamiento.politicaSeleccionada.isEGreedySeleccionado()">
+                    <div class="span12">
+                        <div class="controls">
+                            <input type="text" name="" placeholder="Epsilon" class="input-small"
+                                   style="margin: 0px 0;" ng-model="entrenamiento.politicaSeleccionada.epsilon"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group row-fluid" ng-show="entrenamiento.politicaSeleccionada.isSoftmaxSeleccionado()">
+                    <div class="span12">
+                        <div class="controls">
+                            <input type="text" name="" placeholder="tau" class="input-small"
+                                   style="margin: 0px 0;" ng-model="entrenamiento.politicaSeleccionada.tau"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </back>
+    </widget>
+
     <widget skin="white" widgetVar="resultadoEntrenamiento">
         <front titulo="Informe del Coach">
-            <p class="widget-description" style="margin: 5px;" ng-hide="entrenamiento.completado">
+            <!--<p class="widget-description" style="margin: 5px;" ng-hide="entrenamiento.completado">
                 Se mostrarán los resultados del entrenamiento una vez que haya entrenado al agente.
-            </p>
+            </p>-->
+            <img src="img/agente-min.png" style="height: 198px;" alt="agente-meme" ng-hide="entrenamiento.completado" />
             <span ng-show="entrenamiento.completado"><chart id="chartie" data="entrenamiento.resultado"></chart></span>
         </front>
         <back>
         </back>
     </widget>
+
     <widget widgetVar="partidaWidger">
         <front titulo="Panel de control" class="panel-control" >
 
             <ul>
                 <li>
-                    <div style="float: none;">Matriz Q</div>
-                    <div style="float: none;">
-                        <input type="number" min="0" max="{{entorno.mapa.filas}}" ng-model="consulta.fila" style="width: 35px; padding: 1px;" placeholder="i" ng-change="consulta.consultarQs(consulta.fila, consulta.columna)" /> x
-                        <input type="number" min="0" max="{{entorno.mapa.columnas}}" ng-model="consulta.columna" placeholder="j" style="width: 35px; padding: 1px;" ng-change="consulta.consultarQs(consulta.fila, consulta.columna)" />
-                        <!--A(<input type="text" ng-model="consulta.accion" placeholder="a" style="width: 35px;" />)-->
-                    </div>
+
                 </li>
                 <li class="smaller">wiwi</li>
                 <li class="smaller">wiwi</li>
                 <li class="bottom" style="padding-top: 1px;" >
+                    <div style="float:left; margin-right: 20px;"><div style="float: none;">Matriz Q</div>
+                    <div style="float: none;">
+                        <input type="number" min="0" max="{{entorno.mapa.filas}}" ng-model="consulta.fila" style="width: 35px; padding: 1px;" placeholder="i" ng-change="consulta.consultarQs(consulta.fila, consulta.columna)" /> x
+                        <input type="number" min="0" max="{{entorno.mapa.columnas}}" ng-model="consulta.columna" placeholder="j" style="width: 35px; padding: 1px;" ng-change="consulta.consultarQs(consulta.fila, consulta.columna)" />
+                    </div></div>
                     <div style="float: left;">
                        <div style="float:none; ">
                            <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[7]" />
@@ -383,15 +388,14 @@
     </widget>
 
 </span>
-<!--
-<div class="widget-holder blank-widget" ng-show="entorno">
+
+<div class="widget-holder blank-widget" >
     <div class="widget-flipper">
         <div class="widget-area" style="padding:0px;">
+
         </div>
     </div>
-</div>-->
-
-
+</div>
 
 </div>
 </div>
@@ -411,7 +415,8 @@
         <table class="mapa" style="float: left; margin-right: 10px;">
             <tr ng-repeat="fila in mapa.mapa track by $index">
                 <td ng-repeat="columna in fila track by $index" jqyoui-droppable="opcionesCasillero" data-drop="true" ng-class="columna.nombre" fila="{{$parent.$index}}" columna="{{$index}}" ng-click="editor.pintar($parent.$index,$index)" style="cursor: crosshair;" ng-model="posicion" >
-                    <img src="img/juego/meta.png" alt="meta" if="isMeta($parent.$index, $index)" style="margin-left:15px; margin-top: -20px;float: left;" jqyoui-draggable="{index: {{$index}}, animate: true}" data-drag="true" ng-model="meta" />
+                    <!--<img src="img/juego/meta.png" alt="meta" if="isMeta($parent.$index, $index)" style="margin-left:15px; margin-top: -20px;float: left;" jqyoui-draggable="{index: {{$index}}, animate: true}" data-drag="true" ng-model="meta" />-->
+                    <img src="img/juego/meta.png" alt="meta" if="isMeta($parent.$index, $index)" style="margin-left:15px; margin-top: -20px;float: left;" draggable="true" />
                 </td>
             </tr>
         </table>
@@ -426,7 +431,7 @@
 
     </contenido>
     <bottom>
-        <button class="btn btn-danger" ng-click="editor.hide()" aria-hidden="true">Cerrar</button>
+        <button class="btn btn-danger" ng-click="editor.hide()" aria-hidden="true" >Cerrar</button>
     </bottom>
 </modal>
 
