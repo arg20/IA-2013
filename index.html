@@ -336,14 +336,32 @@
                 <li>
                     <div style="float: none;">Matriz Q</div>
                     <div style="float: none;">
-                        <input type="text" ng-model="consulta.fila" style="width: 35px;" placeholder="i" /> x
-                        <input type="text" ng-model="consulta.columna" placeholder="j" style="width: 35px;" />
+                        <input type="number" min="0" max="{{entorno.mapa.filas}}" ng-model="consulta.fila" style="width: 35px; padding: 1px;" placeholder="i" ng-change="consulta.consultarQs(consulta.fila, consulta.columna)" /> x
+                        <input type="number" min="0" max="{{entorno.mapa.columnas}}" ng-model="consulta.columna" placeholder="j" style="width: 35px; padding: 1px;" ng-change="consulta.consultarQs(consulta.fila, consulta.columna)" />
                         <!--A(<input type="text" ng-model="consulta.accion" placeholder="a" style="width: 35px;" />)-->
                     </div>
                 </li>
                 <li class="smaller">wiwi</li>
                 <li class="smaller">wiwi</li>
-                <li class="bottom" > wiwi</li>
+                <li class="bottom" style="padding-top: 1px;" >
+                    <div style="float: left;">
+                       <div style="float:none; ">
+                           <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[7]" />
+                           <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[0]" />
+                           <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[1]" />
+                       </div>
+                        <div style="float:none; margin-top: 3px; margin-bottom: 3px;" >
+                            <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[6]" />
+                            <span style="width: 35px;">{{consulta.fila}} x {{consulta.columna}}</span>
+                            <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[2]" />
+                        </div>
+                        <div style="float:none; ">
+                            <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[5]" />
+                            <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[4]" />
+                            <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[3]" />
+                        </div>
+                    </div>
+                </li>
             </ul>
 
             <!--<div class="row" style="margin-left: 0px;">
@@ -408,8 +426,7 @@
 
     </contenido>
     <bottom>
-        <button class="btn btn-danger" ng-click="editor.hide()" aria-hidden="true">Descartar</button>
-        <button class="btn btn-success" ng-click="editor.hide();">Guardar</button>
+        <button class="btn btn-danger" ng-click="editor.hide()" aria-hidden="true">Cerrar</button>
     </bottom>
 </modal>
 
@@ -433,12 +450,12 @@
     </contenido>
     <bottom>
         <button class="btn btn-inverse" ng-click="moverAgenteAleatoriamente()" aria-hidden="true">Resetear</button>
-        <button class="btn btn-danger" ng-click="partida.hide()" aria-hidden="true">Descartar</button>
+        <button class="btn btn-danger" ng-click="partida.hide()" aria-hidden="true">Cerrar</button>
         <button class="btn btn-success" ng-click="jugar()">Jugar</button>
-        <button class="btn btn-primary" ng-click="ejecutarPrimerosDiezMovimientos()">Diez movimientos</button>
     </bottom>
 </modal>
 
 
 </body>
 </html>
+

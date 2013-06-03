@@ -397,8 +397,8 @@ function Mapa(filas, columnas, numParedes, numPozos) {
 
 
 var TipoCamino = {
-    POZO : new Camino(0,"Pozo", -1),
-    PARED: new Camino(1,"Pared",-1),
+    POZO : new Camino(0,"Pozo", -100),
+    PARED: new Camino(1,"Pared",-100),
     MALO: new Camino(2, "Malo",0.05 ),
     NEUTRAL: new Camino(3, "Neutral", 0.10),
     BUENO: new Camino(4, "Bueno", 0.25),
@@ -749,7 +749,9 @@ function PoliticaAleatoria(entorno) {
 }
 
 function PoliticaSoftmax(agente, tau) {
+    var self = this;
     this.nombre = "Softmax";
+    this.tau = tau;
 
     this.seleccionarAccion = function(estado) {
         var qValues = agente.conocimiento.getValoresDeQEnEstado(estado);
@@ -760,7 +762,7 @@ function PoliticaSoftmax(agente, tau) {
         var sumProb = 0;
 
         for (accionElegida = 0; accionElegida < qValues.length; accionElegida++) {
-            prob[accionElegida] = Math.exp(qValues[accionElegida] / tau);
+            prob[accionElegida] = Math.exp(qValues[accionElegida] / self.tau);
             sumProb += prob[accionElegida];
         }
         for (accionElegida = 0; accionElegida < qValues.length; accionElegida++) {

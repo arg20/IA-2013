@@ -38,6 +38,7 @@ app.controller("AppCtrl", function($scope, Notifier, $timeout, localStorageServi
         completado: false,
         politicaSeleccionada: {
             nombre: 'greedy',
+            tau: 200,
             epsilon: 0.3,
             isGreedySeleccionado: function()  {return $scope.entrenamiento.politicaSeleccionada.nombre === "greedy" },
             isSoftmaxSeleccionado: function() {return $scope.entrenamiento.politicaSeleccionada.nombre === "softmax"},
@@ -149,6 +150,7 @@ app.controller("AppCtrl", function($scope, Notifier, $timeout, localStorageServi
     }
 
     $scope.tamano = "6";
+
     $scope.actualizarTamano = function(nuevoTamano) {
        $scope.tamano = nuevoTamano;
        $scope.configuracionEntorno.filas = + nuevoTamano;
@@ -165,13 +167,15 @@ app.controller("AppCtrl", function($scope, Notifier, $timeout, localStorageServi
     };
 
     $scope.crearEntorno = function() {
-       $scope.resetear();
-       var config = $scope.configuracionEntorno;
-       $scope.entorno = new Entorno(config.filas, config.columnas, config.paredes, config.pozos);
-       $scope.mapa = $scope.entorno.mapa;
-       console.log($scope.entorno.mapa.toString());
-       $scope.crearAgente();
-       $scope.entrenamiento.repeticiones = 100000;
+        $scope.entorno = null;
+        $scope.agente = null;
+        $scope.entrenamiento.resetearEntrenamiento();
+        var config = $scope.configuracionEntorno;
+        $scope.entorno = new Entorno(config.filas, config.columnas, config.paredes, config.pozos);
+        $scope.mapa = $scope.entorno.mapa;
+        console.log($scope.entorno.mapa.toString());
+        $scope.crearAgente();
+        $scope.entrenamiento.repeticiones = 100000;
         $scope.entorno.partidasJugadas = 0;
         $scope.posicionInicial = $scope.entorno.mapa.posicionAgente;
        Notifier.notify({
@@ -264,12 +268,20 @@ app.controller("AppCtrl", function($scope, Notifier, $timeout, localStorageServi
     $scope.consulta = {
         fila: 0,
         columna: 0,
-        accion: 2
+        accion: 2,
+        resultado: [0,0,0,0,0,0,0,0]
     };
 
     $scope.consulta.consultarQ = function(i,j,a) {
         if ($.isNumeric(i) && $.isNumeric(j) && $.isNumeric(a) ) {
             return $scope.agente.conocimiento.Q([i,j],a);
+        }
+        return "Ingrese todos los valores";
+    }
+
+    $scope.consulta.consultarQs = function(i,j) {
+        if ($.isNumeric(i) && $.isNumeric(j)) {
+            $scope.consulta.resultado = $scope.agente.conocimiento.getValoresDeQEnEstado([i,j]);
         }
         return "Ingrese todos los valores";
     }
