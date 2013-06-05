@@ -236,7 +236,16 @@ app.controller("AppCtrl", function($scope, Notifier, $timeout, localStorageServi
             this.pincelSeleccionado = nombre;
         },
         pintar: function(i,j) {
+            var tipo = $scope.mapa.getTipoCamino(i,j);
             $scope.mapa.setTipoCamino(TipoCamino.getTipoFromNombre(this.pincelSeleccionado), i,j);
+            if (!$scope.mapa.isMapaValido()) {
+                $scope.mapa.setTipoCamino(tipo, i, j);
+                Notifier.notify({
+                    title: 'Accion no valida!',
+                    type: 'info',
+                    text: 'Al poner el obstaculo alli el mapa dejara de ser valido, no se permite esta accion.'
+                })
+            }
         }
     }
 
@@ -250,19 +259,6 @@ app.controller("AppCtrl", function($scope, Notifier, $timeout, localStorageServi
         $scope.corrida = new Partida($scope.entorno);
         var resultado = $scope.corrida.correrPartida();
         $scope.agente.agenteView.doAccion(resultado.acciones);
-    }
-
-    $scope.ejecutarPrimerosDiezMovimientos = function() {
-        var movimientos = 10;
-        var acciones = [];
-        var estado = $scope.entorno.getEstado();
-        while ( !$scope.entorno.isEstadoFinal() && (movimientos > 0) ) {
-            var accion = $scope.entorno.agente.conocimiento.getMejorAccionPosible(estado);
-            acciones.push(accion);
-            estado = $scope.entorno.ejecutarAccion(accion);
-            movimientos--;
-        }
-        $scope.agente.agenteView.doAccion(acciones);
     }
 
     $scope.consulta = {
@@ -295,15 +291,24 @@ app.controller("AppCtrl", function($scope, Notifier, $timeout, localStorageServi
     }
 
     $scope.opcionesCasillero = {
-        onDrop: function(el) {
-            console.log(el);
-            return true;
-        },
+        onDrop: 'dropCallback',
         tolerance: 'pointer'
     }
 
-    $scope.meta = {
-         nombre: 'meta'
+    $scope.dropCallback = function(ev, ui) {
+        var i = +ev.target.attributes.fila.value;
+        var j = +ev.target.attributes.columna.value;
+
+        if ($scope.mapa.isParedOPozo(i, j)) {
+            Notifier.notify({
+                title: 'Accion no valida!',
+                type: 'info',
+                text: 'No puede posicionarse la meta sobre una pared o un pozo.'
+            })
+        } else {
+            $scope.entorno.mapa.posicionMeta = new Posicion(i,j);
+            console.log($scope.entorno.mapa.posicionMeta);
+        }
     }
 
-})
+});
