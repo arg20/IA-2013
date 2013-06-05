@@ -175,7 +175,15 @@ app.controller("AppCtrl", function($scope, Notifier, $timeout, localStorageServi
         $scope.mapa = $scope.entorno.mapa;
         console.log($scope.entorno.mapa.toString());
         $scope.crearAgente();
-        $scope.entrenamiento.repeticiones = 100000;
+        switch ($scope.entorno.mapa.filas) {
+            case 6: $scope.entrenamiento.repeticiones = 25000;
+                break;
+            case 7: $scope.entrenamiento.repeticiones = 50000;
+                break;
+            case 8: $scope.entrenamiento.repeticiones = 75000;
+                break;
+            default: $scope.entrenamiento.repeticiones = 100000;
+        }
         $scope.entorno.partidasJugadas = 0;
         $scope.posicionInicial = $scope.entorno.mapa.posicionAgente;
        Notifier.notify({
@@ -293,6 +301,17 @@ app.controller("AppCtrl", function($scope, Notifier, $timeout, localStorageServi
     $scope.opcionesCasillero = {
         onDrop: 'dropCallback',
         tolerance: 'pointer'
+    }
+
+    $scope.metaOpciones = {
+        revert: true,
+        revertDuration: 150,
+        onStart: "cursorChanger"
+    }
+
+    $scope.cursorChanger = function(el, ui) {
+        console.log(ui);
+        $(ui.helper[0]).css('cursor','-webkit-grabbing');
     }
 
     $scope.dropCallback = function(ev, ui) {

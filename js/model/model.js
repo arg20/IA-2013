@@ -495,8 +495,8 @@ function Conocimiento(filas, columnas, cantidadDeAcciones, qInicial, mapa) {
         for (var i = 0; i < filas; i++) {
             for (var j = 0; j < columnas; j++) {
                 for (var a = 0; a < cantidadDeAcciones; a++) {
-                    proxEstado = mapa.estimarProxEstado(i,j,a)
-                    if ((!mapa.isParedOPozo(proxEstado.i, proxEstado.j)) && (mapa.isValido(proxEstado.i,proxEstado.j))) {
+                    proxEstado = mapa.estimarProxEstado(i,j,a);
+                    if ((!mapa.isParedOPozo(proxEstado.i, proxEstado.j)) && (mapa.isValido(proxEstado.i,proxEstado.j)) && (!mapa.isParedOPozo(i,j)) ) {
                         self.qValuesTable[i][j][a] = valorInicial;
                     } else {
                         self.qValuesTable[i][j][a] = 0;

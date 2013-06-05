@@ -344,17 +344,18 @@
                 <li class="smaller">wiwi</li>
                 <li class="smaller">wiwi</li>
                 <li class="bottom" style="padding-top: 1px;" >
-                    <div style="float:left; margin-right: 20px;"><div style="float: none;">Matriz Q</div>
-                    <div style="float: none;">
-                        <input type="number" min="0" max="{{entorno.mapa.filas}}" ng-model="consulta.fila" style="width: 35px; padding: 1px;" placeholder="i" ng-change="consulta.consultarQs(consulta.fila, consulta.columna)" /> x
-                        <input type="number" min="0" max="{{entorno.mapa.columnas}}" ng-model="consulta.columna" placeholder="j" style="width: 35px; padding: 1px;" ng-change="consulta.consultarQs(consulta.fila, consulta.columna)" />
-                    </div></div>
+                    <div style="float:left; margin-right: 20px;">
+                        <div style="float: none; margin-left: 35px;">Matriz Q</div>
+                        <div style="float: none;">
+                            i= <input type="number" min="0" max="{{entorno.mapa.filas}}" ng-model="consulta.fila" style="width: 35px; padding: 1px; margin-top: 5px;" placeholder="i" ng-change="consulta.consultarQs(consulta.fila, consulta.columna)" /> j=
+                            <input type="number" min="0" max="{{entorno.mapa.columnas}}" ng-model="consulta.columna" placeholder="j" style="width: 35px; padding: 1px; margin-top: 5px;" ng-change="consulta.consultarQs(consulta.fila, consulta.columna)" />
+                        </div></div>
                     <div style="float: left;">
-                       <div style="float:none; ">
-                           <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[7]" />
-                           <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[0]" />
-                           <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[1]" />
-                       </div>
+                        <div style="float:none; ">
+                            <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[7]" />
+                            <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[0]" />
+                            <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[1]" />
+                        </div>
                         <div style="float:none; margin-top: 3px; margin-bottom: 3px;" >
                             <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[6]" />
                             <span style="width: 35px;">{{consulta.fila}} x {{consulta.columna}}</span>
@@ -415,7 +416,7 @@
         <table class="mapa" style="float: left; margin-right: 10px;">
             <tr ng-repeat="fila in mapa.mapa track by $index">
                 <td ng-repeat="columna in fila track by $index" jqyoui-droppable="opcionesCasillero" data-drop="true" ng-class="columna.nombre" fila="{{$parent.$index}}" columna="{{$index}}" ng-click="editor.pintar($parent.$index,$index)" style="cursor: url('img/brocha.png') 0 21,crosshair;" ng-model="posicion" >
-                    <img src="img/juego/meta.png" alt="meta" if="isMeta($parent.$index, $index)" style="margin-left:15px; margin-top: -20px;float: left; cursor: -webkit-grab" jqyoui-draggable="{index: {{$index}}, revert: 'invalid', revertDuration: 150 }" data-drag="true" ng-model="meta" />
+                    <img src="img/juego/meta.png" alt="meta" if="isMeta($parent.$index, $index)" style="margin-left:15px; margin-top: -20px;float: left; cursor: -webkit-grab" jqyoui-draggable="metaOpciones" data-drag="true" ng-model="meta" />
                 </td>
             </tr>
         </table>
