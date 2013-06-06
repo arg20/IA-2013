@@ -20,7 +20,16 @@ app.controller("AppCtrl", function($scope, Notifier, $timeout, localStorageServi
     /*
     Fin para debugging
      */
-
+    $scope.mensajes = {
+        mensajeJuego: 'Partida amigable',
+        editor: {
+            mouseSobre: {
+                x: '0',
+                y: '0'
+            },
+            posicionHovered: function() {return 'Posicion en el mapa: (' + this.mouseSobre.x + ',' + this.mouseSobre.y + ")." }
+        }
+    }
 
     $scope.configuracionEntorno = {
         filas:6,

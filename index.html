@@ -415,7 +415,7 @@
     <contenido>
         <table class="mapa" style="float: left; margin-right: 10px;">
             <tr ng-repeat="fila in mapa.mapa track by $index">
-                <td ng-repeat="columna in fila track by $index" jqyoui-droppable="opcionesCasillero" data-drop="true" ng-class="columna.nombre" fila="{{$parent.$index}}" columna="{{$index}}" ng-click="editor.pintar($parent.$index,$index)" style="cursor: url('img/brocha.png') 0 21,crosshair;" ng-model="posicion" >
+                <td ng-repeat="columna in fila track by $index" jqyoui-droppable="opcionesCasillero" data-drop="true" ng-class="columna.nombre" fila="{{$parent.$index}}" columna="{{$index}}" ng-click="editor.pintar($parent.$index,$index)" style="cursor: url('img/brocha.png') 0 21,crosshair;" ng-model="posicion" ng-mouseenter="mensajes.editor.mouseSobre.x = $parent.$index; mensajes.editor.mouseSobre.y = $index;" >
                     <img src="img/juego/meta.png" alt="meta" if="isMeta($parent.$index, $index)" style="margin-left:15px; margin-top: -20px;float: left; cursor: -webkit-grab" jqyoui-draggable="metaOpciones" data-drag="true" ng-model="meta" />
                 </td>
             </tr>
@@ -428,7 +428,11 @@
             <tr><td><a href="#" class="darken" ng-click="editor.seleccionarPincel('Pozo')"><img src="img/juego/pozo.png" alt=""/></a></td></tr>
             <tr><td><a href="#" class="darken" ng-click="editor.seleccionarPincel('Pared')"><img src="img/juego/pared.png" alt=""/></a></td></tr>
         </table>
-
+        <div class="row-fluid">
+            <div class="span9">
+                {{mensajes.editor.posicionHovered()}}
+            </div>
+        </div>
     </contenido>
     <bottom>
         <button class="btn btn-danger" ng-click="editor.hide()" aria-hidden="true" >Cerrar</button>
@@ -436,22 +440,28 @@
 </modal>
 
 
-    <modal header="Jugar un partida" widgetvar="partida" >
+<modal header="Jugar un partida" widgetvar="partida" >
     <contenido>
-        <div class="row-fluid"><div class="span9"><table class="mapa" style="float: left; margin-right: 10px;">
+        <div class="row-fluid">
+            <div class="span9">
+                <table class="mapa" style="float: left; margin-right: 10px;">
+                    <tr ng-repeat="fila in mapa.mapa track by $index">
+                        <td ng-repeat="columna in fila track by $index" ng-class="columna.nombre" fila="{{$parent.$index}}" columna="{{$index}}">
+                            <img src="img/juego/meta.png" alt="meta" if="isMeta($parent.$index, $index)" style="margin-left:15px; margin-top: -20px;float: left;" />
+                            <div if="isPosicionInicial($parent.$index, $index)" style="height: 25px;width: 25px; padding-left: 3px; margin-top: 2px" >
+                                <agente widgetvar="entorno.agente.agenteView" mapa="entorno.mapa" > </agente>
+                            </div>
+                        </td>
+                    </tr>
 
-            <tr ng-repeat="fila in mapa.mapa track by $index">
-                <td ng-repeat="columna in fila track by $index" ng-class="columna.nombre" fila="{{$parent.$index}}" columna="{{$index}}">
-                    <img src="img/juego/meta.png" alt="meta" if="isMeta($parent.$index, $index)" style="margin-left:15px; margin-top: -20px;float: left;" />
-                    <div if="isPosicionInicial($parent.$index, $index)" style="height: 25px;width: 25px; padding-left: 3px; margin-top: 2px" >
-                        <agente widgetvar="entorno.agente.agenteView" mapa="entorno.mapa" > </agente>
-                    </div>
-                </td>
-            </tr>
-
-        </table></div>
-
-</div>
+                </table>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span9">
+{{mensajes.mensajeJuego}}
+            </div>
+        </div>
     </contenido>
     <bottom>
         <button class="btn btn-inverse" ng-click="moverAgenteAleatoriamente()" aria-hidden="true">Resetear</button>
