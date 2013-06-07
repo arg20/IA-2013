@@ -115,16 +115,24 @@
         });
     }
 
-    Agent.prototype.doAccion = function(acciones) {
+    Agent.prototype.doAccion = function(acciones, callback) {
 
         //si es una sola accion
         if (typeof(acciones) == "number") {
             this[acciones]();
         } else {
-
             for (i = 0; i < acciones.length; i++) {
                 this[acciones[i]]();
             }
+        }
+        if (typeof callback != 'undefined') {
+            var agente = this;
+            this.agregarAColaDeAcciones(function() {
+                agente.element.queue(function(next) {
+                    callback();
+                    next();
+                })
+            });
         }
 
     }
