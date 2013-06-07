@@ -117,7 +117,7 @@ a.darken:hover img {
 }
 
 .panel-control ul li:first-child {
-    width:200px;
+    width:185px;
     height:100px;
     float:left;
     padding-top: 10px;
@@ -127,7 +127,7 @@ a.darken:hover img {
     text-align: center;
 }
 .panel-control ul li.smaller {
-     width: 100px;
+     width: 115px;
      height:50px;
      float:left;
      padding-top: 10px;
@@ -146,4 +146,13 @@ a.darken:hover img {
     height: 100px;
     padding-top: 10px;
     line-height: 20px;
+    padding-right: 1px;
+}
+
+.mapa.editable td {
+    cursor: url('../img/brocha.png') 0 21,crosshair;
+}
+
+.cuentagotas {
+    cursor: url('../img/cuentagotas.png') 0 21, crosshair;
 }

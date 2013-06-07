@@ -27,7 +27,7 @@ app.controller("AppCtrl", function($scope, Notifier, $timeout, localStorageServi
                 x: '0',
                 y: '0'
             },
-            posicionHovered: function() {return 'Posicion en el mapa: (' + this.mouseSobre.x + ',' + this.mouseSobre.y + ")." }
+            posicionHovered: function() {return '(' + this.mouseSobre.x + ',' + this.mouseSobre.y + ")" }
         }
     }
 
@@ -309,7 +309,7 @@ app.controller("AppCtrl", function($scope, Notifier, $timeout, localStorageServi
 
     $scope.opcionesCasillero = {
         onDrop: 'dropCallback',
-        tolerance: 'pointer'
+        tolerance: 'intersect'
     }
 
     $scope.metaOpciones = {
