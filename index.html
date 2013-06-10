@@ -254,7 +254,7 @@
             </ul>
         </front>
         <back>
-            <div class="container-fluid widget-settings">
+            <div class="container-fluid widget-settings" style="color: white;">
                 <div class="control-group row-fluid">
                     <div class="span12">
                         <label class="control-label"><strong>Política de planificación</strong></label>
@@ -263,14 +263,14 @@
                 <div class="control-group row-fluid">
                     <div class="span12">
                         <div class="controls">
-                            <select name="multiFilter" style="margin:5px 0px;" class="input-medium"
+                            <select name="multiFilter" style="margin:5px 0px; width:105px;"
                                     ng-model="entrenamiento.politicaSeleccionada.nombre" ng-change="entrenamiento.actualizarPolitica()">
                                 <option value="greedy">Greedy</option>
-                                <option value="e-greedy">E-greedy</option>
+                                <option value="e-greedy">Soft</option>
                                 <option value="aleatoria">Aleatoria</option>
                                 <option value="softmax">Softmax</option>
                             </select>
-
+                            &nbsp;<span style="color:white;" >Episodios:</span> <input type="number" name="reps" id="reps" ng-model="entrenamiento.repeticiones" style="margin: 0px 0; width:78px;" />
                         </div>
                     </div>
                 </div>
@@ -294,30 +294,29 @@
                 </div>
                 <div class="control-group row-fluid">
                     <div class="span12">
-                        <label class="control-label" style="margin-top: 5px;"><strong>Configuración específica</strong></label>
+                        <label class="control-label" style="margin-top: 5px;"><strong>Configuración de política</strong></label>
                     </div>
                 </div>
                 <div class="control-group row-fluid" ng-show="entrenamiento.politicaSeleccionada.isGreedySeleccionado()">
                     <div class="span12">
                         <div class="controls">
-                            <input type="text" name="" placeholder="Epsilon" class="input-small"
+                            <strong style="color: white; font-size: 24px;">ε&nbsp;&nbsp;&nbsp;</strong><input type="text" name="" placeholder="Epsilon" class="input-small"
                                    style="margin: 0px 0;" ng-model="entrenamiento.politicaSeleccionada.epsilon"/>
-                            &nbsp;<span style="color:white;" >Iteraciones:</span> <input type="number" name="reps" id="reps" ng-model="entrenamiento.repeticiones" class="input-small"  style="margin: 0px 0;" />
                         </div>
                     </div>
                 </div>
                 <div class="control-group row-fluid" ng-show="entrenamiento.politicaSeleccionada.isEGreedySeleccionado()">
                     <div class="span12">
                         <div class="controls">
-                            <input type="text" name="" placeholder="Epsilon" class="input-small"
+                            <strong style="color: white; font-size: 24px;">ε&nbsp;&nbsp;&nbsp;</strong><input type="text" name="" placeholder="Epsilon" class="input-small"
                                    style="margin: 0px 0;" ng-model="entrenamiento.politicaSeleccionada.epsilon"/>
                         </div>
                     </div>
                 </div>
                 <div class="control-group row-fluid" ng-show="entrenamiento.politicaSeleccionada.isSoftmaxSeleccionado()">
                     <div class="span12">
-                        <div class="controls">
-                            <input type="text" name="" placeholder="tau" class="input-small"
+                        <div class="controls" style="color: white;">
+                            <strong style="color: white; font-size: 24px;">τ</strong>= &nbsp;<input type="text" name="" placeholder="tau" class="input-small"
                                    style="margin: 0px 0;" ng-model="entrenamiento.politicaSeleccionada.tau"/>
                         </div>
                     </div>
@@ -425,7 +424,7 @@
                 <table class="mapa editable">
                     <tr ng-repeat="fila in mapa.mapa track by $index">
                         <td ng-repeat="columna in fila track by $index" jqyoui-droppable="opcionesCasillero" data-drop="true" ng-class="columna.nombre" fila="{{$parent.$index}}" columna="{{$index}}" ng-click="editor.pintar($parent.$index,$index)" ng-model="posicion" ng-mouseenter="mensajes.editor.mouseSobre.x = $parent.$index; mensajes.editor.mouseSobre.y = $index;" >
-                            <img src="img/juego/meta.png" alt="meta" if="isMeta($parent.$index, $index)" style="margin-left:15px; margin-top: -20px;float: left; cursor: -webkit-grab" jqyoui-draggable="metaOpciones" data-drag="true" ng-model="meta" />
+                            <img src="img/juego/meta.png" alt="meta" if="isMeta($parent.$index, $index)" style="margin-left:15px; margin-top: -20px;float: left; cursor: -webkit-grab; cursor: -moz-grab; position: absolute" jqyoui-draggable="metaOpciones" data-drag="true" ng-model="meta" />
                         </td>
                     </tr>
                 </table>

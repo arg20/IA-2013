@@ -51,7 +51,7 @@ function Entorno(filas, columnas, paredes, pozos) {
         if (self.mapa.isAccionValida(accion)) {
             self.mapa.posicionAgente = self.mapa.getCoordenadasDeAccion(accion);
         } else {
-            throw new Error("Accion ilegal: " + accion);
+            console.log("El agente intento pasar por una pared al hacer la accion: " + accion);
         }
         // actualizar recompensa
         self.recompensa = self.calcularRecompensa();
@@ -849,7 +849,7 @@ function Partida(entorno) {
     };
 
     this.correrPartida = function() {
-        var movimientos = 10;
+        var movimientos = 20;
         var flagVueltasEnCiculos = false;
         var casillerosRecorridos = [];
         var nombreEstado = "(" + self.estado[0] + "," + self.estado[1] + ")";
@@ -857,6 +857,11 @@ function Partida(entorno) {
         var tipoCamino;
         while ( !entorno.isEstadoFinal() && (!flagVueltasEnCiculos || movimientos > 0 )) {
             var accion = entorno.agente.conocimiento.getMejorAccionPosible(self.estado);
+            if (!entorno.isAccionValida(accion)) {
+                var accionesValidas = entorno.mapa.getAccionesValidas(self.estado[0], self.estado[1]);
+                accion = accionesValidas[getRandomInt(0,(accionesValidas.length -1))];
+            }
+
             resultado.acciones.push(accion);
             self.estado = entorno.ejecutarAccion(accion);
             var nombreEstado = "(" + self.estado[0] + "," + self.estado[1] + ")";

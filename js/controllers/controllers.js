@@ -1,11 +1,3 @@
-/**
- * Created with JetBrains WebStorm.
- * User: MabelZim
- * Date: 18/05/13
- * Time: 20:16
- * To change this template use File | Settings | File Templates.
- */
-
     app.controller('AppCtrl', [
         '$scope',
         'Notifier',
@@ -91,8 +83,8 @@
                     $scope.agente.conocimiento.alpha = +this.qlearning.alfa;
                     $scope.agente.conocimiento.gamma = +this.qlearning.gamma;
                     $scope.agente.conocimiento.qInicial = +this.qlearning.qInicial;
-                    $scope.agente.conocimiento.sufrirAmnesia();
-                    $scope.agente.conocimiento.inicializarConValor(+this.qlearning.qInicial);
+/*                    $scope.agente.conocimiento.sufrirAmnesia();
+                    $scope.agente.conocimiento.inicializarConValor(+this.qlearning.qInicial);*/
                     $scope.agente.politica.epsilon = $scope.entrenamiento.politicaSeleccionada.epsilon;
                     console.log('Entrenando al agente! (' + $scope.entrenamiento.repeticiones + ' repeticiones)\n');
                     console.log('Metodo de seleccion usado: ' + $scope.agente.politica.nombre);
@@ -155,7 +147,6 @@
                 $scope.tamano = nuevoTamano;
                 $scope.configuracionEntorno.filas = +nuevoTamano;
                 $scope.configuracionEntorno.columnas = +nuevoTamano;
-                console.log($scope.tamano);
             };
             $scope.crearAgente = function () {
                 $scope.entorno.agente = $scope.agente = new Agente($scope.entorno);
@@ -175,10 +166,10 @@
                 $scope.crearAgente();
                 switch ($scope.entorno.mapa.filas) {
                     case 6:
-                        $scope.entrenamiento.repeticiones = 25000;
+                        $scope.entrenamiento.repeticiones = 2000;
                         break;
                     case 7:
-                        $scope.entrenamiento.repeticiones = 50000;
+                        $scope.entrenamiento.repeticiones = 5000;
                         break;
                     case 8:
                         $scope.entrenamiento.repeticiones = 75000;

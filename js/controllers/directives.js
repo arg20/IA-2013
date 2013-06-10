@@ -165,7 +165,7 @@ app.directive('modal', function () {
             widgetvar: '=',
             header: '@'
         },
-        template: '<div class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">\n    <div class="modal-header">\n        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">\ufffd</button>\n        <h3 id="myModalLabel">{{header}}</h3>\n    </div>\n    <span ng-transclude></span>\n\n</div>',
+        template: '<div class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">\n    <div class="modal-header">\n        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>\n        <h3 id="myModalLabel">{{header}}</h3>\n    </div>\n    <span ng-transclude></span>\n\n</div>',
         link: function (scope, element, attrs) {
             if (!scope.widgetvar) {
                 scope.widgetvar = {};
