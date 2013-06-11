@@ -315,15 +315,17 @@
             tolerance: 'intersect'
         };
         $scope.metaOpciones = {
-            revert: true,
-            revertDuration: 150,
             onStart: 'cursorChanger'
         };
         $scope.agenteOpciones = {
-            revert: true,
-            revertDuration: 150,
             onStart: 'cursorChanger'
+
         };
+
+        $scope.agenteOpcionesJqueryUI = {
+            revert: 'invalid',
+            revertDuration: 150
+        }
         $scope.cursorChanger = function (el, ui) {
             console.log(ui);
             $(ui.helper[0]).css('cursor', '-webkit-grabbing');
@@ -352,7 +354,11 @@
          Generacion de graficos, experimental
          */
         $scope.grafico = {
-            datos: []
+            datos: {
+                Greedy: [],
+                Softmax: [],
+                Aleatorio: []
+            }
         };
 
         $scope.intervalo = 50;
@@ -364,7 +370,7 @@
         $scope.callbacksParaEntrenamiento = {
             postRepeticion: function(numeroIteracion) {
                 if (numeroIteracion % $scope.intervalo == 0) {
-                    var i, j, a, diferencia, porcentajeFaltante, cantidadDePosiciones;
+                    var i, j, a, diferencia, porcentajeFaltante, cantidadDePosiciones, porcentajeAprendido;
                     var matrizQActual = $scope.agente.conocimiento.qValuesTable;
                     var matrizQOptima = $scope.matrizQOptima;
                     var filas = matrizQOptima.length;
@@ -375,10 +381,11 @@
                     for (i = 0; i < filas; i++) {
                         for (j = 0; j < columnas; j++) {
                             for (a = 0; a < acciones; a++) {
+                                matrizDiferencia[i][j][a] = 0;
                                 if (matrizQOptima[i][j][a] !== 0) {
                                     diferencia = Math.abs(matrizQActual[i][j][a] - matrizQOptima[i][j][a]);
                                     porcentajeFaltante = diferencia / matrizQOptima[i][j][a] * 100;
-                                    matrizDiferencia[i][j][a] = porcentajeFaltante;
+                                    matrizDiferencia[i][j][a] = porcentajeFaltante;   //complemento el porcentaje faltante para saber el porcentaje aprendido
                                 }
                             }
                         }
@@ -395,10 +402,8 @@
                     }
 
                     porcentajeFaltante /= cantidadDePosiciones;
-                    $scope.grafico.datos.push({
-                        iteracion: numeroIteracion,
-                        porcentaje: porcentajeFaltante
-                    });
+                    porcentajeAprendido = 100 - porcentajeFaltante;
+                    $scope.grafico.datos[$scope.agente.politica.nombre].push([numeroIteracion,porcentajeAprendido]);
                 }
             }
         }
