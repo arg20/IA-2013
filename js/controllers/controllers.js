@@ -105,6 +105,9 @@
                 async(function () {
                     $scope.$apply(function () {
                         for (var start = +new Date(); $scope.entrenamiento.repeticionActual < $scope.entrenamiento.repeticiones && +new Date() - start < 200; $scope.entrenamiento.repeticionActual++) {
+                            if ( typeof callbacks.preRepeticion === "function") {
+                                callbacks.preRepeticion($scope.entrenamiento.repeticionActual);
+                            }
                             $scope.agente.hacerRepeticion();
                             if ( typeof callbacks.postRepeticion === "function") {
                                 callbacks.postRepeticion($scope.entrenamiento.repeticionActual);
@@ -276,6 +279,11 @@
                 });
             });
         };
+
+        $scope.agenteOpciones = {
+            onStart: 'cursorChanger'
+        }
+
         $scope.consulta = {
             fila: 0,
             columna: 0,
@@ -353,41 +361,93 @@
          Generacion de graficos, experimental
          */
         $scope.grafico = {
-            datos: {
-                Greedy: {
-                    name: 'Greedy',
-                    data: []
+            datos: [],
+
+            estrategiasAComparar: [],
+            estrategia: {
+                nombre: 'greedy',
+                parametros: {
+                    epsilon: 0.2,
+                    tau: 20
                 },
-                Softmax: [],
-                Aleatoria: []
+                label: 'Greedy E=0.2'
+            },
+            agregarEstrategia: function(estrategia) {
+                var nuevaEstrategia = {};
+                nuevaEstrategia.nombre = estrategia.nombre;
+                if (nuevaEstrategia.nombre === 'greedy' || nuevaEstrategia.nombre === 'e-greedy' ) {
+                    nuevaEstrategia.epsilon = estrategia.parametros.epsilon;
+                } else if (nuevaEstrategia.nombre === 'softmax') {
+                    nuevaEstrategia.tau = estrategia.parametros.tau;
+                }
+
+                this.estrategiasAComparar.push(nuevaEstrategia);
+            },
+            prepararDatos: function() {
+                estrategiasAComparar.forEach(function(estrategia) {
+                    $scope.estrategiaProcesadaActualmente = estrategia;
+                    $scope.seleccionarPolitica($scope.agente, {nombre: estrategia.nombre, epsilon: estrategia.epsilon, tau: estrategia.tau});
+
+                });
             }
+
         };
 
-        $scope.intervalo = 300;
+
+        $scope.intervalo = 10;
 
         $scope.establecerConocimientoActualComoPoliticaOptima = function () {
             $scope.matrizQOptima = $scope.agente.conocimiento.qValuesTable.clone();
         }
 
         $scope.callbacksParaEntrenamiento = {
-            postRepeticion: function(numeroIteracion) {
-                if (numeroIteracion % $scope.intervalo == 0 && numeroIteracion > 0 || numeroIteracion === 1) {
+            preEntrenamiento: function() {
+                var i, j, a;
+                $scope.agente.conocimiento.sufrirAmnesia();
+                var matrizQActual = $scope.agente.conocimiento.qValuesTable;
+                var matrizQOptima = $scope.matrizQOptima;
+                var filas = matrizQOptima.length;
+                var columnas = matrizQOptima[0].length;
+                var acciones = 8;
+
+                var matrizVariaciones = createArray(filas, columnas, acciones);
+                var cantidadDeVariados = 0;
+
+                for (i = 0; i < filas; i++) {
+                    for (j = 0; j < columnas; j++) {
+                        for (a = 0; a < acciones; a++) {
+                            if (matrizQOptima[i][j][a] === matrizQActual[i][j][a]) {
+                               matrizVariaciones[i][j][a] = false;
+                            } else {
+                                matrizVariaciones[i][j][a] = true;
+                                cantidadDeVariados++;
+                            }
+                        }
+                    }
+                }
+                $scope.grafico.matrizVariaciones = matrizVariaciones;
+                $scope.grafico.cantidadDeVariados = cantidadDeVariados;
+            },
+            preRepeticion: function(numeroIteracion) {
+                if (numeroIteracion % $scope.intervalo == 0 || numeroIteracion === 1) {
                     var i, j, a, diferencia, porcentajeFaltante, cantidadDePosiciones, porcentajeAprendido;
                     var matrizQActual = $scope.agente.conocimiento.qValuesTable;
                     var matrizQOptima = $scope.matrizQOptima;
                     var filas = matrizQOptima.length;
                     var columnas = matrizQOptima[0].length;
                     var acciones = 8;
-                    cantidadDePosiciones = filas * columnas * acciones;
+                    var cantidadDeVariaciones = $scope.grafico.cantidadDeVariados;
+                    var matrizVariaciones = $scope.grafico.matrizVariaciones;
                     var matrizDiferencia = createArray(filas, columnas, acciones);
+
                     for (i = 0; i < filas; i++) {
                         for (j = 0; j < columnas; j++) {
                             for (a = 0; a < acciones; a++) {
                                 matrizDiferencia[i][j][a] = 0;
-                                if (matrizQOptima[i][j][a] !== 0) {
+                                if (matrizQOptima[i][j][a] !== 0 && matrizVariaciones[i][j][a]) {
                                     diferencia = Math.abs(matrizQActual[i][j][a] - matrizQOptima[i][j][a]);
                                     porcentajeFaltante = diferencia / matrizQOptima[i][j][a] * 100;
-                                    matrizDiferencia[i][j][a] = porcentajeFaltante;   //complemento el porcentaje faltante para saber el porcentaje aprendido
+                                    matrizDiferencia[i][j][a] = Math.abs(porcentajeFaltante);   //complemento el porcentaje faltante para saber el porcentaje aprendido
                                 }
                             }
                         }
@@ -398,12 +458,14 @@
                     for (i = 0; i < filas; i++) {
                         for (j = 0; j < columnas; j++) {
                             for (a = 0; a < acciones; a++) {
-                                porcentajeFaltante += matrizDiferencia[i][j][a];
+                                if (matrizVariaciones[i][j][a]) {
+                                    porcentajeFaltante += matrizDiferencia[i][j][a];
+                                }
                             }
                         }
                     }
 
-                    porcentajeFaltante /= cantidadDePosiciones;
+                    porcentajeFaltante /= cantidadDeVariaciones;
                     porcentajeAprendido = 100 - porcentajeFaltante;
                     $scope.grafico.datos[$scope.agente.politica.nombre].data.push([numeroIteracion,porcentajeAprendido]);
                 }
@@ -422,9 +484,23 @@
                     plotBackgroundColor: null,
                     plotBorderWidth: null,
                     plotShadow: false,
-                    height: 200
+                    height: 200,
+                    spacingLeft: 0,
+                    marginLeft:1
                 },
-                title: { text: "Entrenamiento" },
+                credits: {
+                    enabled: false
+                },
+                legend:{
+                    title: {
+                        text: 'Eventos'
+                    },
+                    enabled: true,
+                    align: 'right',
+                    verticalAlign: 'top',
+                    width: 80
+                },
+                title: { text: '' },
                 tooltip: {
                     pointFormat: '{point.name}: <b>{point.y}</b>',
                     percentageDecimals: 1
@@ -434,14 +510,9 @@
                         allowPointSelect: true,
                         cursor: 'pointer',
                         dataLabels: {
-                            enabled: false,
-                            color: '#000000',
-                            connectorColor: '#000000',
-                            formatter: function () {
-                                return '<b>' + this.point.name + '</b>: ' + this.percentage + ' %';
-                            },
-                            showInLegend: true
-                        }
+                            enabled: false
+                        },
+                        showInLegend: true
                     }
                 },
                 series: [{
@@ -462,9 +533,12 @@
                     plotShadow: false,
                     zoomType: 'x'
                 },
+                title: {
+                    text: 'Comparación de Estrategias'
+                },
                 xAxis: {
                     title: {text: 'Episodios'},
-                    type: 'logarithmic'
+                    type: 'linear'
                 },
                 yAxis: {
                     title: {
@@ -490,7 +564,7 @@
                         }
                     }
                 },
-                series: [$scope.grafico.datos.Greedy]
+                series: $scope.grafico.datos
             }
         }
     }]);
