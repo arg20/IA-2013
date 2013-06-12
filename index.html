@@ -480,6 +480,8 @@
                         <input type="text" name="" id="asd" ng-model="grafico.estrategia.label"/>
                     </div>
                     <a class="btn btn-primary" ng-click="grafico.agregarEstrategia(grafico.estrategia)" >Agregar</a>
+                    <a class="btn btn-primary" ng-click="grafico.prepararDatos()" >Comparar!</a>
+                    <a class="btn btn-primary" ng-click="graficoComparativoModal.show()" ng-show="isGraficoComparativoCreado" >Ver Gráfico</a>
                 </div>
             </div>
         </front>

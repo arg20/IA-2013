@@ -375,6 +375,7 @@
             agregarEstrategia: function(estrategia) {
                 var nuevaEstrategia = {};
                 nuevaEstrategia.nombre = estrategia.nombre;
+                nuevaEstrategia.label = estrategia.label;
                 if (nuevaEstrategia.nombre === 'greedy' || nuevaEstrategia.nombre === 'e-greedy' ) {
                     nuevaEstrategia.epsilon = estrategia.parametros.epsilon;
                 } else if (nuevaEstrategia.nombre === 'softmax') {
@@ -384,11 +385,10 @@
                 this.estrategiasAComparar.push(nuevaEstrategia);
             },
             prepararDatos: function() {
-                estrategiasAComparar.forEach(function(estrategia) {
-                    $scope.estrategiaProcesadaActualmente = estrategia;
-                    $scope.seleccionarPolitica($scope.agente, {nombre: estrategia.nombre, epsilon: estrategia.epsilon, tau: estrategia.tau});
-
-                });
+                var estrategia = $scope.grafico.estrategiasAComparar.pop();
+                $scope.estrategiaProcesadaActualmente = estrategia;
+                $scope.entrenamiento.seleccionarPolitica($scope.agente, {nombre: estrategia.nombre, epsilon: estrategia.epsilon, tau: estrategia.tau});
+                $scope.entrenamiento.entrenarTimeout($scope.callbacksParaEntrenamiento);
             }
 
         };
@@ -404,6 +404,7 @@
             preEntrenamiento: function() {
                 var i, j, a;
                 $scope.agente.conocimiento.sufrirAmnesia();
+                $scope.grafico.datosTemp = [];
                 var matrizQActual = $scope.agente.conocimiento.qValuesTable;
                 var matrizQOptima = $scope.matrizQOptima;
                 var filas = matrizQOptima.length;
@@ -467,12 +468,25 @@
 
                     porcentajeFaltante /= cantidadDeVariaciones;
                     porcentajeAprendido = 100 - porcentajeFaltante;
-                    $scope.grafico.datos[$scope.agente.politica.nombre].data.push([numeroIteracion,porcentajeAprendido]);
+                    $scope.grafico.datosTemp.push([numeroIteracion,porcentajeAprendido]);
                 }
             },
             postEntrenamiento: function() {
-                $scope.crearGraficoComparativo();
-                $scope.isGraficoComparativoCreado = true;
+                var data = $scope.grafico.datosTemp;
+                var label = $scope.estrategiaProcesadaActualmente.label;
+                $scope.grafico.datos.push({
+                    name: label,
+                    data: data
+                });
+                if ($scope.grafico.estrategiasAComparar.length > 0) {
+                    var estrategia = $scope.grafico.estrategiasAComparar.pop();
+                    $scope.estrategiaProcesadaActualmente = estrategia;
+                    $scope.entrenamiento.seleccionarPolitica($scope.agente, {nombre: estrategia.nombre, epsilon: estrategia.epsilon, tau: estrategia.tau});
+                    $scope.entrenamiento.entrenarTimeout($scope.callbacksParaEntrenamiento);
+                } else {
+                    $scope.crearGraficoComparativo();
+                    $scope.isGraficoComparativoCreado = true;
+                }
             }
         }
 
