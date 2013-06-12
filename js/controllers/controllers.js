@@ -370,7 +370,16 @@
                     epsilon: 0.2,
                     tau: 20
                 },
-                label: 'Greedy E=0.2'
+                label: 'Greedy E=0.2',
+                actualizarLabel: function() {
+
+                    this.label = this.nombre + " ";
+                    if (this.nombre === 'greedy') {
+                        this.label += "ε =" + this.parametros.epsilon;
+                    } else if (this.nombre == 'softmax') {
+                        this.label += "τ =" + this.parametros.tau;
+                    }
+                }
             },
             agregarEstrategia: function(estrategia) {
                 var nuevaEstrategia = {};
