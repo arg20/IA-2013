@@ -26,13 +26,18 @@
             columnas: 6,
             paredes: 4,
             pozos: 3,
-            aleatorio: true
+            aleatorio: true,
+            recompensaMeta: 90,
+            castigoMuerte: -100
         };
+
+        $scope.TipoCamino = TipoCamino;
         $scope.posicionInicial = new Posicion(0, 0);
         $scope.entrenamiento = {
             muertesDelAgente: 0,
             triunfosDelAgente: 0,
             completado: false,
+            resultado: [],
             politicaSeleccionada: {
                 nombre: 'greedy',
                 tau: 200,
@@ -133,6 +138,7 @@
                         $scope.entorno.resetearEstado();
                         console.log('Exploracion' + $scope.agente.politica.accionesExploracion);
                         console.log('Explotacion' + $scope.agente.politica.accionesExplotacion);
+                        $scope.crearGraficoResultadoEntrenamiento();
                         $scope.posicionInicial = new Posicion($scope.entorno.mapa.posicionAgente.i, $scope.entorno.mapa.posicionAgente.j);
                     }
                 });
@@ -314,13 +320,6 @@
             onDrop: 'dropCallback',
             tolerance: 'intersect'
         };
-        $scope.metaOpciones = {
-            onStart: 'cursorChanger'
-        };
-        $scope.agenteOpciones = {
-            onStart: 'cursorChanger'
-
-        };
 
         $scope.agenteOpcionesJqueryUI = {
             revert: 'invalid',
@@ -355,13 +354,16 @@
          */
         $scope.grafico = {
             datos: {
-                Greedy: [],
+                Greedy: {
+                    name: 'Greedy',
+                    data: []
+                },
                 Softmax: [],
-                Aleatorio: []
+                Aleatoria: []
             }
         };
 
-        $scope.intervalo = 50;
+        $scope.intervalo = 300;
 
         $scope.establecerConocimientoActualComoPoliticaOptima = function () {
             $scope.matrizQOptima = $scope.agente.conocimiento.qValuesTable.clone();
@@ -369,7 +371,7 @@
 
         $scope.callbacksParaEntrenamiento = {
             postRepeticion: function(numeroIteracion) {
-                if (numeroIteracion % $scope.intervalo == 0) {
+                if (numeroIteracion % $scope.intervalo == 0 && numeroIteracion > 0 || numeroIteracion === 1) {
                     var i, j, a, diferencia, porcentajeFaltante, cantidadDePosiciones, porcentajeAprendido;
                     var matrizQActual = $scope.agente.conocimiento.qValuesTable;
                     var matrizQOptima = $scope.matrizQOptima;
@@ -403,8 +405,92 @@
 
                     porcentajeFaltante /= cantidadDePosiciones;
                     porcentajeAprendido = 100 - porcentajeFaltante;
-                    $scope.grafico.datos[$scope.agente.politica.nombre].push([numeroIteracion,porcentajeAprendido]);
+                    $scope.grafico.datos[$scope.agente.politica.nombre].data.push([numeroIteracion,porcentajeAprendido]);
                 }
+            },
+            postEntrenamiento: function() {
+                $scope.crearGraficoComparativo();
+                $scope.isGraficoComparativoCreado = true;
+            }
+        }
+
+        $scope.isGraficoComparativoCreado = false;
+
+        $scope.crearGraficoResultadoEntrenamiento = function() {
+            $scope.graficoResultadoEntrenamiento = {
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false,
+                    height: 200
+                },
+                title: { text: "Entrenamiento" },
+                tooltip: {
+                    pointFormat: '{point.name}: <b>{point.y}</b>',
+                    percentageDecimals: 1
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: false,
+                            color: '#000000',
+                            connectorColor: '#000000',
+                            formatter: function () {
+                                return '<b>' + this.point.name + '</b>: ' + this.percentage + ' %';
+                            },
+                            showInLegend: true
+                        }
+                    }
+                },
+                series: [{
+                    type: 'pie',
+                    name: 'Resultado de Entrenamiento',
+                    data: $scope.entrenamiento.resultado
+                }]
+            }
+        }
+
+        $scope.crearGraficoResultadoEntrenamiento();
+
+        $scope.crearGraficoComparativo = function() {
+            $scope.graficoComparativo = {
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false,
+                    zoomType: 'x'
+                },
+                xAxis: {
+                    title: {text: 'Episodios'},
+                    type: 'logarithmic'
+                },
+                yAxis: {
+                    title: {
+                        text: 'Porcentaje (°%)'
+                    },
+                    labels: {
+                        formatter: function() {
+                            return this.value + ' %';
+                        }
+                    },
+                    plotLines: [{
+                        value: 0,
+                        width: 1,
+                        color: '#808080'
+                    }],
+                    max: 100,
+                    min: 0
+                },
+                plotOptions: {
+                    line: {
+                        marker: {
+                            enabled: false
+                        }
+                    }
+                },
+                series: [$scope.grafico.datos.Greedy]
             }
         }
     }]);

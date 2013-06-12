@@ -31,6 +31,8 @@
 
 </head>
 <body ng-app="IA2013" class="body" ng-controller="AppCtrl">
+
+<!--titulo-->
 <div class="container-fluid dashboard dashboard-title">
     <div class="row-fluid">
         <div class="span12">
@@ -49,6 +51,8 @@
         </div>
     </div>
 </div>
+
+<!--Barrita de menu-->
 <div class="container-fluid dashboard dashboard-quick-launch">
     <div class="row-fluid">
         <div class="span12">
@@ -77,10 +81,11 @@
         </div>
     </div>
 </div>
+
+<!--widgets-->
 <div class="container-fluid dashboard dashboard-widget-group">
 <div class="row-fluid">
 <div id="photon_widgets" class="span12 ui-sortable">
-<!-- General Stats Widget begin -->
 
 <widget skin="dark" widgetVar="widgetEstado">
     <front titulo="Estado General">
@@ -155,57 +160,101 @@
     </front>
     <back>
         <div class="container-fluid widget-settings">
-            <div class="control-group row-fluid">
-                <div class="span12">
-                    <label class="control-label"><strong>Seleccionar Tamaño</strong></label>
-                </div>
-            </div>
-            <div class="control-group row-fluid">
-                <div class="span12">
-                    <div class="controls">
-
-                        <select ng-model="tamano" style="margin:5px 0px;" class="input-medium" ng-change="actualizarTamano(tamano)" >
-                            <option value="6">6x6</option>
-                            <option value="7">7x7</option>
-                            <option value="8">8x8</option>
-                            <option value="9">9x9</option>
-                            <option value="10">10x10</option>
-                        </select>
-
+            <div class="row-fluid">
+                <div class=span6>
+                <div class="control-group row-fluid">
+                    <div class="span12">
+                        <label class="control-label"><strong style="margin-left: 2px;">Mapa</strong></label>
                     </div>
                 </div>
-            </div>
-            <div class="row-fluid" style="margin-top: 5px;">
-                <div class="span12">
-                    <label class="control-label" style="display:inline-block; "><strong>Aleatorio?</strong></label>
-                    <input type="checkbox" name="aleatorio" id="aleatorio" ng-model="configuracionEntorno.aleatorio"
-                           style="margin:5px 0px; display:inline-block; "/>
+                <div class="control-group row-fluid">
+                    <div class="span7">
+                        <div class="controls">
+
+                            <select ng-model="tamano" style="margin:5px 0px; width:130px" ng-change="actualizarTamano(tamano)" >
+                                <option value="6">6x6</option>
+                                <option value="7">7x7</option>
+                                <option value="8">8x8</option>
+                                <option value="9">9x9</option>
+                                <option value="10">10x10</option>
+                            </select>
+
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="control-group row-fluid" style="margin-top: 5px;">
-                <div class="span12">
-                    <label class="control-label">Paredes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Pozos</label>
+
+                <div class="control-group row-fluid" >
+                    <div class="span12">
+                        <label class="control-label">Paredes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Pozos</label>
+                    </div>
                 </div>
-            </div>
-            <div class="control-group row-fluid">
-                <div class="span12">
-                    <div class="controls">
+                    <div class="control-group row-fluid">
+                        <div class="span12">
+                            <div class="controls">
 
-                        <input type="number" name="" class="input-mini" style="margin-left: 0px;margin-top: 0px;"
-                               ng-model="configuracionEntorno.paredes"/>
+                                <input type="number" name="" class="input-mini" style=" margin: 0px;" ng-model="configuracionEntorno.paredes"/>
 
-                        <input type="number" name="" class="input-mini" style="margin-left: 5px;margin-top: 0px;"
-                               ng-model="configuracionEntorno.pozos"/>
+                                <input type="number" name="" class="input-mini" style="margin: 0px 0px 0px 5px;"
+                                       ng-model="configuracionEntorno.pozos"/>
 
 
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row-fluid" style="margin-top: 5px;">
+                        <div class="span12">
+                            <label class="control-label" style="display:inline-block; "><strong>Premio & Castigo</strong></label>
+<!--                            <input type="checkbox" name="aleatorio" id="aleatorio" ng-model="configuracionEntorno.aleatorio"
+                                   style="margin:5px 0px; display:inline-block; "/>-->
+                        </div>
+                    </div>
+
+                    <div class="control-group row-fluid">
+                        <div class="span12">
+                            <label class="control-label">Meta&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Pozo</label>
+                        </div>
+                    </div>
+                    <div class="control-group row-fluid">
+                        <div class="span12">
+                            <div class="controls">
+
+                                <input type="text" name="" class="input-mini" style="margin-left: 0px;margin-top: 0px;"
+                                       ng-model="configuracionEntorno.recompensaMeta"/>
+
+                            <input type="text" name="" class="input-mini" style="margin-left: 5px;margin-top: 0px;"
+                                   ng-model="TipoEntorno.POZO.recompensa"/>
+
+
+                        </div>
+                    </div>
+                </div>
+                </div>
+                <div class="span6" style="color: white">
+                    <div class="control-group row-fluid">
+                        <div class="span12">
+                            <label class="control-label" style="margin-left: 8px;"><strong>Recompensas</strong></label>
+                        </div>
+                    </div>
+                    <div class="span12">
+                        <label class="control-label" style="display:inline-block; "><strong>Malo: </strong></label>
+                        <input type="text" style="margin:5px 14px; display:inline-block; " class="ng-pristine ng-valid input-mini" ng-model="TipoCamino.MALO.recompensa">
+                    </div><div class="span12">
+                        <label class="control-label" style="display:inline-block; "><strong>Nuetro: </strong></label>
+                        <input type="text" style="margin:5px 0px; display:inline-block; " class="ng-pristine ng-valid input-mini" ng-model="TipoCamino.NEUTRAL.recompensa">
+                    </div><div class="span12">
+                        <label class="control-label" style="display:inline-block; "><strong>Bueno: </strong></label>
+                        <input type="text" style="margin:5px 2px; display:inline-block; " class="ng-pristine ng-valid input-mini" ng-model="TipoCamino.BUENO.recompensa">
+                    </div><div class="span12">
+                        <label class="control-label" style="display:inline-block; "><strong>Exclte: </strong></label>
+                        <input type="text" style="margin:5px 5px; display:inline-block; " class="ng-pristine ng-valid input-mini" ng-model="TipoCamino.EXCELENTE.recompensa">
                     </div>
                 </div>
             </div>
         </div>
-
-
     </back>
 </widget>
+
+<!--placeholders-->
 <div class="widget-holder blank-widget" ng-hide="entorno">
     <div class="widget-flipper">
         <div class="widget-area" style="padding:0px;">
@@ -332,7 +381,10 @@
                 Se mostrarán los resultados del entrenamiento una vez que haya entrenado al agente.
             </p>-->
             <img src="img/agente-min.png" style="height: 198px;" alt="agente-meme" ng-hide="entrenamiento.completado" />
-            <span ng-show="entrenamiento.completado"><chart id="chartie" data="entrenamiento.resultado"></chart></span>
+            <span ng-show="entrenamiento.completado">
+
+                <chart id="chartie" value="graficoResultadoEntrenamiento"></chart>
+            </span>
         </front>
         <back>
         </back>
@@ -346,7 +398,7 @@
                      No se me ocurre que mostrar en esta seccion
                 </li>
                 <li class="smaller"><a class="btn btn-mini btn-primary" ng-click="establecerConocimientoActualComoPoliticaOptima()" >Óptima</a></li>
-                <li class="smaller">y aca?</li>
+                <li class="smaller"><a class="btn btn-mini btn-success" >Comparar</a></li>
                 <li class="bottom" style="padding-top: 1px;" >
                     <div style="float:left; margin-right: 10px;">
                         <div style="float: none; margin-left: 0px;">Explorador de la matriz Q</div>
@@ -394,7 +446,7 @@
 
 </span>
 
-<div class="widget-holder blank-widget" >
+<div class="widget-holder blank-widget" ng-hide="isGraficoComparativoCreado" >
     <div class="widget-flipper">
         <div class="widget-area" style="padding:0px;">
 
@@ -402,18 +454,33 @@
     </div>
 </div>
 
+<span ng-show="isGraficoComparativoCreado" ng-hide="!isGraficoComparativoCreado" ng-animate="{show: 'animated flipInX'}" >
+    <widget skin="white" >
+        <front titulo="Grafico comparativo">
+        </front>
+        <back>
+
+        </back>
+    </widget>
+</span>
+
+
 </div>
 </div>
 </div>
+
+<!--Marca de agua-->
 <div class="dashboard-watermark"></div>
 
+
+<!--Ventanas modal-->
 <modal header="Reiniciar la aplicación" widgetvar="reseteador" >
     <contenido>
         <p>¿Está seguro de que desea resetear el estado actual?</p>
     </contenido>
     <bottom>
         <button class="btn" ng-click="reseteador.hide()" aria-hidden="true">No, me equivoqué</button>
-        <button class="btn btn-danger" ng-click="resetear(); reseteador.hide();">Si, porfi!</button>
+        <button class="btn btn-danger" ng-click="resetear(); reseteador.hide();">Si!</button>
     </bottom>
 </modal>
 <modal header="Editar mapa" widgetvar="editor">
@@ -424,7 +491,7 @@
                 <table class="mapa editable">
                     <tr ng-repeat="fila in mapa.mapa track by $index">
                         <td ng-repeat="columna in fila track by $index" jqyoui-droppable="opcionesCasillero"  data-drop="true" ng-class="columna.nombre" fila="{{$parent.$index}}" columna="{{$index}}" ng-click="editor.pintar($parent.$index,$index)" ng-model="posicion" ng-mouseenter="mensajes.editor.mouseSobre.x = $parent.$index; mensajes.editor.mouseSobre.y = $index; consulta.consultarQs($parent.$index,$index);" >
-                            <img src="img/juego/meta.png" alt="meta" if="isMeta($parent.$index, $index)" style="margin-left:15px; margin-top: -20px;float: left; cursor: -webkit-grab; cursor: -moz-grab; position: absolute" jqyoui-draggable="metaOpciones" data-drag="true" ng-model="meta" data-jqyoui-options="{revert: true, revertDuration: 150}" />
+                            <img src="img/juego/meta.png" alt="meta" if="isMeta($parent.$index, $index)" style="margin-left:15px; margin-top: -20px;float: left; cursor: -webkit-grab; cursor: -moz-grab; position: absolute" jqyoui-draggable="{onStart: 'cursorChanger'}" data-drag="true" ng-model="meta" data-jqyoui-options="{revert: true, revertDuration: 150}" />
                         </td>
                     </tr>
                 </table>
@@ -473,8 +540,6 @@
         <button class="btn btn-danger" ng-click="editor.hide()" aria-hidden="true" >Cerrar</button>
     </bottom>
 </modal>
-
-
 <modal header="Jugar un partida" widgetvar="partida" >
     <contenido>
         <div class="row-fluid">
@@ -484,7 +549,7 @@
                         <td ng-repeat="columna in fila track by $index" ng-class="columna.nombre" fila="{{$parent.$index}}" columna="{{$index}}" jqyoui-droppable="opcionesCasillero" data-drop="true" ng-model="posicion" >
                             <img src="img/juego/meta.png" alt="meta" if="isMeta($parent.$index, $index)" style="margin-left:15px; margin-top: -20px;float: left; position: absolute" />
                             <div if="isPosicionInicial($parent.$index, $index)" style="height: 25px;width: 25px; padding-left: 3px; margin-top: 2px" >
-                                <agente widgetvar="entorno.agente.agenteView" mapa="entorno.mapa" jqyoui-draggable="agenteOpciones" data-jqyoui-options="{revert: 'invalid',revertDuration: 150}" data-drag="true" ng-model="agente" > </agente>
+                                <agente widgetvar="entorno.agente.agenteView" mapa="entorno.mapa" jqyoui-draggable="{onStart: 'cursorChanger'}" data-jqyoui-options="{revert: 'invalid',revertDuration: 150}" data-drag="true" ng-model="agente" > </agente>
                             </div>
                         </td>
                     </tr>
@@ -494,7 +559,7 @@
         </div>
         <div class="row-fluid">
             <div class="span9">
-{{mensajes.mensajeJuego}}
+                {{mensajes.mensajeJuego}}
             </div>
         </div>
     </contenido>
@@ -502,6 +567,15 @@
         <button class="btn btn-inverse" ng-click="moverAgenteAleatoriamente()" aria-hidden="true">Resetear</button>
         <button class="btn btn-danger" ng-click="partida.hide()" aria-hidden="true">Cerrar</button>
         <button class="btn btn-success" ng-click="jugar()">Jugar</button>
+    </bottom>
+</modal>
+
+<modal header="Grafico comparativo" widgetvar="graficoComparativoModal" >
+    <contenido>
+        <chart value="graficoComparativo" > </chart>
+    </contenido>
+    <bottom>
+        <button class="btn btn-danger" ng-click="graficoComparativoModal.hide()" aria-hidden="true">Cerrar</button>
     </bottom>
 </modal>
 

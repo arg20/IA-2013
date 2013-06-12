@@ -107,7 +107,7 @@ app.directive('back', function () {
         }
     };
 });
-app.directive('chart', function () {
+/*app.directive('chart', function () {
     return {
         restrict: 'E',
         replace: true,
@@ -120,42 +120,12 @@ app.directive('chart', function () {
         link: function (scope, element, attrs) {
             scope.$watch('data', function () {
                 element.css('height', '200px');
-                element.highcharts({
-                    chart: {
-                        plotBackgroundColor: null,
-                        plotBorderWidth: null,
-                        plotShadow: false
-                    },
-                    title: { text: scope.title },
-                    tooltip: {
-                        pointFormat: '{point.name}: <b>{point.y}</b>',
-                        percentageDecimals: 1
-                    },
-                    plotOptions: {
-                        pie: {
-                            allowPointSelect: true,
-                            cursor: 'pointer',
-                            dataLabels: {
-                                enabled: false,
-                                color: '#000000',
-                                connectorColor: '#000000',
-                                formatter: function () {
-                                    return '<b>' + this.point.name + '</b>: ' + this.percentage + ' %';
-                                },
-                                showInLegend: true
-                            }
-                        }
-                    },
-                    series: [{
-                        type: 'pie',
-                        name: 'Resultado de Entrenamiento',
-                        data: scope.data
-                    }]
+                element.highcharts(]
                 });
             });
         }
     };
-});
+});*/
 app.directive('modal', function () {
     return {
         restrict: 'E',
@@ -244,4 +214,40 @@ app.directive('agente', function () {
             scope.agente = element.data('agente');
         }
     };
+});
+
+app.directive('chart', function () {
+    return {
+        restrict: 'E',
+        template: '<div></div>',
+        scope: {
+            chartData: "=value"
+        },
+        transclude:true,
+        replace: true,
+
+        link: function (scope, element, attrs) {
+            var chartsDefaults = {
+                chart: {
+                    renderTo: element[0],
+                    type: attrs.type || null,
+                    height: attrs.height || null,
+                    width: attrs.width || null
+                }
+            };
+
+            //Update when charts data changes
+            scope.$watch(function() { return scope.chartData; }, function(value) {
+                if(!value) return;
+                // We need deep copy in order to NOT override original chart object.
+                // This allows us to override chart data member and still the keep
+                // our original renderTo will be the same
+                var deepCopy = true;
+                var newSettings = {};
+                $.extend(deepCopy, newSettings, chartsDefaults, scope.chartData);
+                var chart = new Highcharts.Chart(newSettings);
+            });
+        }
+    }
+
 });
