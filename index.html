@@ -162,7 +162,7 @@
         <div class="container-fluid widget-settings">
             <div class="row-fluid">
                 <div class=span6>
-                <div class="control-group row-fluid">
+                    <div class="control-group row-fluid">
                     <div class="span12">
                         <label class="control-label"><strong style="margin-left: 2px;">Mapa</strong></label>
                     </div>
@@ -518,7 +518,24 @@
             </div>
         </front>
         <back>
-
+            <div class="container-fluid widget-settings">
+                <div class="row-fluid">
+                    <div class=span6>
+                        <div class="control-group row-fluid">
+                            <div class="span12">
+                                <label class="control-label"><strong style="margin-left: 2px;">Episodios</strong></label>
+                            </div>
+                        </div>
+                        <div class="control-group row-fluid">
+                            <div class="span7">
+                                <div class="controls">
+                                    <input type="text" name="" id="episodiosGrafico" ng-model="grafico.cantidadDeEpisodios"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </back>
     </widget>
 </span>
@@ -633,7 +650,20 @@
 
 <modal header="Grafico comparativo" widgetvar="graficoComparativoModal" >
     <contenido>
-        <chart value="graficoComparativo" > </chart>
+        <chart value="graficoComparativo" recreate="true" > </chart>
+    </contenido>
+    <bottom>
+        <button class="btn btn-danger" ng-click="graficoComparativoModal.hide()" aria-hidden="true">Cerrar</button>
+    </bottom>
+</modal>
+
+
+<modal header="Establecer Política óptima" widgetvar="tomarPoliticaOptimaModal" >
+    <contenido>
+        <p>Para generar el gráfico de comparación de estrategias de selección de acción durante el entrenamiento, debe primero
+        establecer cual es la política óptima. Para ello, primero se entrena exhaustivamente al agente. En nuestras pruebas, la
+        matriz Q suele estabilizarse luego de aproximadamente 5000 iteraciones en los mapas más grandes. Si ya ha entrenado al agente
+        Puede </p>
     </contenido>
     <bottom>
         <button class="btn btn-danger" ng-click="graficoComparativoModal.hide()" aria-hidden="true">Cerrar</button>

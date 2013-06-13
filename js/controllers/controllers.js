@@ -370,14 +370,14 @@
                     epsilon: 0.2,
                     tau: 20
                 },
-                label: 'Greedy E=0.2',
+                label: 'Greedy ε=0.2',
                 actualizarLabel: function() {
 
                     this.label = this.nombre + " ";
                     if (this.nombre === 'greedy') {
-                        this.label += "ε =" + this.parametros.epsilon;
+                        this.label += "ε=" + this.parametros.epsilon;
                     } else if (this.nombre == 'softmax') {
-                        this.label += "τ =" + this.parametros.tau;
+                        this.label += "τ=" + this.parametros.tau;
                     }
                 }
             },
@@ -394,11 +394,25 @@
                 this.estrategiasAComparar.push(nuevaEstrategia);
             },
             prepararDatos: function() {
+                if (typeof($scope.matrizQOptima) == "undefined" ) {
+                    if ($scope.agente.entrenado) {
+                        $scope.tomarPoliticaOptimaModal.show();
+                    } else {
+                        Notifier.notify({
+                            title: 'No es posible generar el grafico',
+                            type: 'info',
+                            text: 'Primero debe entrenarse al agente y obtener una aproximación a la política óptima. Haga click en entrenar.'
+                        });
+                    }
+
+                } else {
                 var estrategia = $scope.grafico.estrategiasAComparar.pop();
                 $scope.estrategiaProcesadaActualmente = estrategia;
                 $scope.entrenamiento.seleccionarPolitica($scope.agente, {nombre: estrategia.nombre, epsilon: estrategia.epsilon, tau: estrategia.tau});
                 $scope.entrenamiento.entrenarTimeout($scope.callbacksParaEntrenamiento);
-            }
+                }
+            },
+            cantidadDeEpisodios: 3000
 
         };
 
