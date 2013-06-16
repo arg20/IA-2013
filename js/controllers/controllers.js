@@ -364,6 +364,7 @@
             datos: [],
 
             estrategiasAComparar: [],
+            episodiosAGraficar: 3000,
             estrategia: {
                 nombre: 'greedy',
                 parametros: {
@@ -394,12 +395,33 @@
                 this.estrategiasAComparar.push(nuevaEstrategia);
             },
             prepararDatos: function() {
-                var estrategia = $scope.grafico.estrategiasAComparar.pop();
-                $scope.estrategiaProcesadaActualmente = estrategia;
-                $scope.entrenamiento.seleccionarPolitica($scope.agente, {nombre: estrategia.nombre, epsilon: estrategia.epsilon, tau: estrategia.tau});
-                $scope.entrenamiento.entrenarTimeout($scope.callbacksParaEntrenamiento);
+                if (typeof($scope.matrizQOptima) == "undefined") {
+                    if ($scope.agente.entrenado) {
+                        $scope.seleccionPoliticaOptimaModal.show();
+                    } else {
+                        Notifier.notify({
+                            title: 'No fue definida una política óptima',
+                            type: 'info',
+                            text: 'El agente no fue entrenado, primero debe intentar aproximar la política óptima entrenandolo con el panel de entrenamiento.'
+                        });
+                    }
+                } else {
+                    if ($scope.grafico.estrategiasAComparar.length == 0) {
+                        Notifier.notify({
+                           title: 'No se añadieron estregias',
+                           type: 'info',
+                           text: 'Primero debe añadir las estrategias a comparar en este mismo panel.'
+                        });
+                        return;
+                    }
+                    $scope.entrenamiento.repeticiones = $scope.grafico.episodiosAGraficar;
+                    var estrategia = $scope.grafico.estrategiasAComparar.pop();
+                    $scope.estrategiaProcesadaActualmente = estrategia;
+                    $scope.entrenamiento.repeticiones = $scope.grafico.episodiosAGraficar;
+                    $scope.entrenamiento.seleccionarPolitica($scope.agente, {nombre: estrategia.nombre, epsilon: estrategia.epsilon, tau: estrategia.tau});
+                    $scope.entrenamiento.entrenarTimeout($scope.callbacksParaEntrenamiento);
+                }
             }
-
         };
 
 
@@ -554,7 +576,8 @@
                     plotBackgroundColor: null,
                     plotBorderWidth: null,
                     plotShadow: false,
-                    zoomType: 'x'
+                    zoomType: 'x',
+                    width: 520
                 },
                 title: {
                     text: 'Comparación de Estrategias'
