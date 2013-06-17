@@ -337,12 +337,13 @@
                 <div class="control-group row-fluid">
                     <div class="span12">
                         <div class="controls">
-                            <input type="text" name="" placeholder="Gamma" class="input-mini"
+                            <input type="text" name="" placeholder="Gamma" class="input-mini" tooltip="Factor de descuento" tooltip-placement="bottom" tooltip-trigger="focus"
                                    style="margin: 0px 3px 0px 0px;" ng-model="entrenamiento.qlearning.gamma"/>
                             <input type="text" name="" placeholder="Q-inicial" class="input-mini"
                                    style="margin: 0px;" ng-model="entrenamiento.qlearning.qInicial"/>
+                            <a ><span tooltip="Ayuda" tooltip-placement="right" ><i class="icon-question-sign icon-white"> </i></span></a>
                         </div>
-                        <a class="btn" href=""><i class="icon-question-sign"> </i></a>
+
                     </div>
                 </div>
                 <div class="control-group row-fluid">
@@ -394,7 +395,7 @@
             <!--<p class="widget-description" style="margin: 5px;" ng-hide="entrenamiento.completado">
                 Se mostrarán los resultados del entrenamiento una vez que haya entrenado al agente.
             </p>-->
-            <img src="img/agente-min.png" style="height: 198px;" alt="agente-meme" ng-hide="entrenamiento.completado" />
+            <img src="img/agente-min.png" class="img-rounded" style="height: 198px;" alt="agente-meme" ng-hide="entrenamiento.completado" />
             <span ng-show="entrenamiento.completado">
 
                 <chart id="chartie" value="graficoResultadoEntrenamiento"></chart>
@@ -417,8 +418,8 @@
                     <div style="float:left; margin-right: 10px;">
                         <div style="float: none; margin-left: 0px;">Explorador de la matriz Q</div>
                         <div style="float: left; margin: 10px 0px 0px 20px">
-                            i= <input type="number" min="0" max="{{entorno.mapa.filas}}" ng-model="consulta.fila" style="width: 35px; padding: 1px; margin-top: 5px;" placeholder="i" ng-change="consulta.consultarQs(consulta.fila, consulta.columna)" /> j=
-                            <input type="number" min="0" max="{{entorno.mapa.columnas}}" ng-model="consulta.columna" placeholder="j" style="width: 35px; padding: 1px; margin-top: 5px;" ng-change="consulta.consultarQs(consulta.fila, consulta.columna)" />
+                            i= <input type="number" min="0" max="{{entorno.mapa.indices.i}}" ng-model="consulta.fila" style="width: 35px; padding: 1px; margin-top: 5px;" placeholder="i" ng-change="consulta.consultarQs(consulta.fila, consulta.columna)" /> j=
+                            <input type="number" min="0" max="{{entorno.mapa.indices.j}}" ng-model="consulta.columna" placeholder="j" style="width: 35px; padding: 1px; margin-top: 5px;" ng-change="consulta.consultarQs(consulta.fila, consulta.columna)" />
                         </div></div>
                     <div style="float: right;">
                         <div style="float:none; ">
@@ -428,7 +429,7 @@
                         </div>
                         <div style="float:none; margin-top: 3px; margin-bottom: 3px;" >
                             <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[6]" />
-                            <span style="width: 35px;">{{consulta.fila}} x {{consulta.columna}}</span>
+                            <span style="width: 35px;">{{consulta.fila || consulta.fila === 0? consulta.fila: 'I'}} x {{consulta.columna || consulta.columna === 0? consulta.columna: 'J'}}</span>
                             <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[2]" />
                         </div>
                         <div style="float:none; ">
@@ -439,19 +440,6 @@
                     </div>
                 </li>
             </ul>
-
-            <!--<div class="row" style="margin-left: 0px;">
-                <div class="span7" style="border-right-width: 1px; border-right-style: dashed; border-bottom-width: 1px; border-bottom-style: solid;">
-                    <strong>Consultas a matriz Q</strong>
-                    <br>
-                    <input type="text" ng-model="consulta.fila" style="width: 35px;" placeholder="i" />x
-                    <input type="text" ng-model="consulta.columna" placeholder="j" style="width: 35px;" />A(
-                    <input type="text" ng-model="consulta.accion" placeholder="a" style="width: 35px;" />)
-                    <br />
-                    Q = {{consulta.consultarQ(consulta.fila,consulta.columna,consulta.accion)}}
-                </div>
-                <div class="span4">h</div>
-            </div>-->
         </front>
         <back>
 
@@ -481,7 +469,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="estrategia in grafico.estrategiasAComparar" >
+            <tr ng-repeat="estrategia in grafico.estrategiasAComparar" ng-animate="{enter: 'animated fadeInUp', leave: 'animated fadeOutUp'}" >
                 <td>{{$index + 1}}</td>
                 <td>{{estrategia.nombre}}</td>
                 <td>{{estrategia.epsilon? estrategia.epsilon : estrategia.tau}}</td>
@@ -503,13 +491,10 @@
                 <td>
                     <div ng-show="grafico.estrategia.nombre === 'greedy'" >
                         ε: <input style="margin: 0px; width: 45px; height:20px;" id="grdy" type="text" placeholder="Epsilon" ng-model="grafico.estrategia.parametros.epsilon" ng-change="grafico.estrategia.actualizarLabel()">
-                </div>
+                    </div>
 
                     <div ng-show="grafico.estrategia.nombre === 'softmax'" >
-                        <div class="input-prepend">
-                            <span class="add-on">τ</span>
-                            <input style="margin: 0px; padding: 0px; width: 45px;" id="sfmx" type="text" placeholder="Tau" ng-model="grafico.estrategia.parametros.tau" ng-change="grafico.estrategia.actualizarLabel()" >
-                        </div>
+                            τ: <input style="margin: 0px; padding: 0px; width: 45px; height: 20px;" id="sfmx" type="text" placeholder="Tau" ng-model="grafico.estrategia.parametros.tau" ng-change="grafico.estrategia.actualizarLabel()" >
                     </div>
                     <div ng-show="grafico.estrategia.nombre === 'aleatoria'">
                         No Disp.
@@ -523,23 +508,29 @@
     <back>
         <div class="container-fluid widget-settings">
             <div class="row-fluid">
-                <div class=span6>
+                <div class="span12">
+                    <label class="control-label"><strong>Configuración del gráfico</strong></label>
+                </div>
+                <div class="span4" style="margin-left: 0px; margin-top: 10px;">
                     <div class="control-group row-fluid">
                         <div class="span12">
-                            <label class="control-label"><strong style="margin-left: 2px;">Episodios</strong></label>
+                            <label class="control-label"><strong>Episodios</strong></label>
                         </div>
                     </div>
                     <div class="control-group row-fluid">
-                        <div class="span7">
+                        <div class="span9">
                             <div class="controls">
 
-                                <input type="text" name="" id="" ng-model="grafico.episodiosAGraficar" />
+                                <input type="text" name="" style="margin:5px 0px 5px 0px;" ng-model="grafico.episodiosAGraficar" />
 
                             </div>
                         </div>
                     </div>
-                    <a class="btn btn-primary" ng-click="grafico.prepararDatos()" >Comparar!</a>
-                    <a class="btn btn-primary" ng-click="graficoComparativoModal.show()" ng-show="isGraficoComparativoCreado" >Ver Gráfico</a>
+                </div>
+                <div class="span8" style="padding-top: 35px;">
+                    <a class="btn btn-primary" ng-click="grafico.prepararDatos()" >Crear gráfico</a>
+
+                    <a style="margin-top: 5px;" class="btn btn-success" ng-click="graficoComparativoModal.show()" ng-show="isGraficoComparativoCreado" ng-animate="{show: 'animated flipInX'}" >&nbsp;&nbsp;Ver Gráfico&nbsp;</a>
                 </div>
             </div>
         </div>
@@ -569,11 +560,11 @@
     <contenido>
         <form class="form-horizontal" style="display: inline-block; margin-right:5px;">
             <div class="container-fluid" style="margin: 0px;">
-                <div class="form-legend" id="Input_Field">Mapa</div>
+                <div class="form-legend" id="Input_Field">Mapa <span tooltip="Ayuda" tooltip-placement="right"><i class="icon-question-sign"></i></span></div>
                 <table class="mapa editable">
                     <tr ng-repeat="fila in mapa.mapa track by $index">
                         <td ng-repeat="columna in fila track by $index" jqyoui-droppable="opcionesCasillero"  data-drop="true" ng-class="columna.nombre" fila="{{$parent.$index}}" columna="{{$index}}" ng-click="editor.pintar($parent.$index,$index)" ng-model="posicion" ng-mouseenter="mensajes.editor.mouseSobre.x = $parent.$index; mensajes.editor.mouseSobre.y = $index; consulta.consultarQs($parent.$index,$index);" >
-                            <img src="img/juego/meta.png" alt="meta" if="isMeta($parent.$index, $index)" style="margin-left:15px; margin-top: -20px;float: left; cursor: -webkit-grab; cursor: -moz-grab; position: absolute" jqyoui-draggable="{onStart: 'cursorChanger'}" data-drag="true" ng-model="meta" data-jqyoui-options="{revert: true, revertDuration: 150}" />
+                            <img src="img/juego/meta.png" alt="meta" if="isMeta($parent.$index, $index)" style="margin-left:15px; margin-top: -25px;float: left; cursor: -webkit-grab; cursor: -moz-grab; position: absolute" jqyoui-draggable="{onStart: 'cursorChanger'}" data-drag="true" ng-model="meta" data-jqyoui-options="{revert: true, revertDuration: 150}" />
                         </td>
                     </tr>
                 </table>
@@ -676,12 +667,12 @@
 </modal>
 
 <modal header="Selección de política óptima" widgetvar="seleccionPoliticaOptimaModal" >
-    <content>
+    <contenido>
         <p>Para poder crear el gráfico de comparación de estrategias de selección de acción, es necesario primero aproximar la política óptima.</p>
         <p>El agente ya ha sido entrenado, desea seleccionar la Matriz Q actual como óptima? </p>
-    </content>
+    </contenido>
     <bottom>
-        <a class="btn btn-success" >Si</a>
+        <a class="btn btn-success" ng-click="establecerConocimientoActualComoPoliticaOptima();seleccionPoliticaOptimaModal.hide();" >Si</a>
         <a class="btn btn-danger" ng-click="seleccionPoliticaOptimaModal.hide()" >No</a>
     </bottom>
 </modal>

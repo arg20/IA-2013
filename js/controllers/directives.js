@@ -252,7 +252,7 @@ app.directive('chart', function () {
                 // our original renderTo will be the same
                 var deepCopy = true;
                 var newSettings = {};
-                $.extend(deepCopy, newSettings, chartsDefaults, scope.chartData);
+                $.extend(true, newSettings, chartsDefaults, scope.chartData);
                 chart = new Highcharts.Chart(newSettings);
             });
         }

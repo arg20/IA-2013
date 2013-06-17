@@ -205,6 +205,10 @@
             }
             $scope.entorno.partidasJugadas = 0;
             $scope.posicionInicial = $scope.entorno.mapa.posicionAgente;
+            $scope.mapa.indices = {
+              i: $scope.mapa.filas - 1,
+              j: $scope.mapa.columnas -1
+            };
             Notifier.notify({
                 title: 'Creaci\xf3n, exitosa',
                 type: 'info',
@@ -417,6 +421,7 @@
                         });
                         return;
                     }
+                    $scope.grafico.datos = [];
                     $scope.entrenamiento.repeticiones = $scope.grafico.episodiosAGraficar;
                     var estrategia = $scope.grafico.estrategiasAComparar.pop();
                     $scope.estrategiaProcesadaActualmente = estrategia;
