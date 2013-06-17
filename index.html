@@ -6,19 +6,23 @@
     <script type="text/javascript" src="js/jquery-1.9.1.js"></script>
     <script type="text/javascript" src="js/jquery-ui.min.js"></script>
     <script type="text/javascript" src="js/angular.min.1.1.5.js"></script>
+    <script type="text/javascript" src="js/angular.min.1.1.5.js"></script>
     <script type="text/javascript" src="js/angular-dragdrop.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/localStorageModule.js"></script>
     <script type="text/javascript" src="js/spritely.js"></script>
     <script type="text/javascript" src="js/rotate.js"></script>
     <script type="text/javascript" src="js/game.js"></script>
+    <script type="text/javascript" src="js/ui-bootstrap-custom-tpls-0.3.0.min.js"></script>
     <script type="text/javascript">
-        var app = angular.module('IA2013', ['LocalStorageModule', 'ngDragDrop']);
+        var app = angular.module('IA2013', ['LocalStorageModule', 'ngDragDrop', 'ui.bootstrap']);
     </script>
     <script type="text/javascript" src="js/model/underscore.string.js"></script>
     <script type="text/javascript" src="js/jquery.pnotify.min.js"></script>
 
     <script type="text/javascript" src="js/highcharts.js"></script>
+
+
     <script type="text/javascript" src="js/model/util.js"></script>
     <script type="text/javascript" src="js/model/model.js"></script>
     <script type="text/javascript" src="js/controllers/controllers.js"></script>
@@ -26,6 +30,7 @@
     <link rel="stylesheet" type="text/css" href="css/app.css" media="all"/>
 
     <link rel="stylesheet" type="text/css" href="css/photon-min.css" media="all"/>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css" media="all"/>
     <link rel="stylesheet" type="text/css" href="css/photon-min-part2.css" media="all"/>
     <link rel="stylesheet" type="text/css" href="css/animate.min.css" media="all"/>
 
@@ -60,7 +65,7 @@
                 <li>
                     <img src="img/icons/ql1-2x.png" alt="Quick Launch Icon" data-original-title="" title="">
 
-                    <p>Juego</p>
+                    <p>Ayuda</p>
                 </li>
                 <li>
                     <img src="img/icons/ql2-2x.png" alt="Quick Launch Icon" data-original-title="" title="">
@@ -146,7 +151,7 @@
     <front titulo="Panel central">
         <h2 class="login-title" >Gestor de partida!</h2>
         <div class="login-member">
-            <p style="margin-top: 0px;">Pódes <a class="flipper" >editar</a> el entorno</p>
+            <p style="margin-top: 0px;">Pódes <a class="flipper" >editar</a> el entorno.</p>
         <a class="btn btn-large btn-success" ng-click="crearEntorno()" ng-hide="isEntornoCreado()" ng-animate="{show:'animated bounceIn'}" >Crear Entorno!</a>
         <a class="btn btn-large btn-inverse" ng-click="crearEntorno()" ng-show="isEntornoCreado()" ng-animate="{show:'animated flipInY'}" >Recrear Entorno!</a>
         </div>
@@ -279,7 +284,7 @@
 
 <span ng-show="entorno" ng-animate="{show:'animated bounceIn', hide:'animated bounceOut'}">
     <widget widgetVar="widgetEntrenamiento">
-        <front titulo="Fase de Entrenamiento" class="task-completion">
+        <front titulo="Panel de Entrenamiento" class="task-completion">
             <ul>
                 <li>
                     Política de selección
@@ -326,19 +331,18 @@
                 <div class="control-group row-fluid">
                     <div class="span12">
                         <label class="control-label"><strong>Q-learning</strong></label>
-                        <label class="control-label">&nbsp;Alfa&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Gamma&nbsp;&nbsp;&nbsp;&nbsp;Q-inicial</label>
+                        <label class="control-label">Gamma&nbsp;&nbsp;&nbsp;&nbsp;Q-inicial</label>
                     </div>
                 </div>
                 <div class="control-group row-fluid">
                     <div class="span12">
                         <div class="controls">
-                            <input type="text" name="" placeholder="Alfa" class="input-mini"
-                                   style="margin: 0px 3px 0px 0px; " ng-model="entrenamiento.qlearning.alfa"/>
                             <input type="text" name="" placeholder="Gamma" class="input-mini"
                                    style="margin: 0px 3px 0px 0px;" ng-model="entrenamiento.qlearning.gamma"/>
                             <input type="text" name="" placeholder="Q-inicial" class="input-mini"
                                    style="margin: 0px;" ng-model="entrenamiento.qlearning.qInicial"/>
                         </div>
+                        <a class="btn" href=""><i class="icon-question-sign"> </i></a>
                     </div>
                 </div>
                 <div class="control-group row-fluid">
@@ -464,90 +468,6 @@
     </div>
 </div>
 
-<span ng-show="isEntornoCreado()" ng-hide="!isEntornoCreado()" ng-animate="{show: 'animated flipInX'}" >
-    <!--<widget skin="white" >
-        <front titulo="Grafico comparativo">
-            <div class="row-fluid">
-                <table>
-                    <thead>
-                    <td>Política</td>
-                    <td>Parámetros</td>
-                    <td>Acciones</td>
-                    </thead>
-                    <tbody>
-                      <tr ng-repeat="estrategia in grafico.estrategiasAComparar" >
-                          <td>{{estrategia.nombre}}</td>
-                          <td>{{estrategia.epsilon? estrategia.epsilon : estrategia.tau}}</td>
-                          <td><button class="btn btn-danger btn-mini">Borrar</button></td>
-                      </tr>
-                      <tr>
-                         <td><select name="estrategiaSelecter" style="margin:5px 0px; width:105px;"
-                                     ng-model="grafico.estrategia.nombre" ng-change="grafico.estrategia.actualizarLabel()" >
-                             <option value="greedy">Greedy</option>
-                             <option value="e-greedy">Soft</option>
-                             <option value="aleatoria">Aleatoria</option>
-                             <option value="softmax">Softmax</option>
-                         </select>
-                         </td>
-                          <td>
-                              <div ng-show="grafico.estrategia.nombre === 'greedy'" >
-                                  <div class="input-prepend">
-                                      <span class="add-on">ε</span>
-                                      <input style="margin: 0px; width: 50px;" id="grdy" type="text" placeholder="Epsilon" ng-model="grafico.estrategia.parametros.epsilon" ng-change="grafico.estrategia.actualizarLabel()">
-                                  </div>
-                              </div>
-
-                              <div ng-show="grafico.estrategia.nombre === 'softmax'" >
-                                  <div class="input-prepend">
-                                      <span class="add-on">τ</span>
-                                      <input style="margin: 0px; width: 50px;" id="sfmx" type="text" placeholder="Tau" ng-model="grafico.estrategia.parametros.tau" ng-change="grafico.estrategia.actualizarLabel()" >
-                                  </div>
-                              </div>
-                              <div ng-show="grafico.estrategia.nombre === 'aleatoria'">
-                                  Sin parámetros
-                              </div>
-
-                          </td>
-                          <td>
-                              <a class="btn btn-primary btn-mini" ng-click="grafico.agregarEstrategia(grafico.estrategia)" >Agregar</a>
-                          </td>
-                      </tr>
-                    </tbody>
-                </table>
-&lt;!&ndash;                <div class="span3">
-                    <input type="text" name="" id="asd" ng-model="grafico.estrategia.label"/>
-                </div>&ndash;&gt;
-                <div class="span12">
-                    &lt;!&ndash;<a class="btn btn-primary" ng-click="grafico.agregarEstrategia(grafico.estrategia)" >Agregar</a>&ndash;&gt;
-                    &lt;!&ndash;<button class="btn btn-success btn-small" ng-click="grafico.agregarEstrategia(grafico.estrategia)">
-                        <img src="img/agregarChart.png" alt=""/>
-                    </button>&ndash;&gt;
-
-                </div>
-            </div>
-        </front>
-        <back>
-            <div class="container-fluid widget-settings">
-                <div class="row-fluid">
-                    <div class=span6>
-                        <div class="control-group row-fluid">
-                            <div class="span12">
-                                <label class="control-label"><strong style="margin-left: 2px;">Episodios</strong></label>
-                            </div>
-                        </div>
-                        <div class="control-group row-fluid">
-                            <div class="span7">
-                                <div class="controls">
-                                    <input type="text" name="" id="episodiosGrafico" ng-model="grafico.cantidadDeEpisodios"/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </back>
-    </widget>-->
-</span>
  <span ng-show="isEntornoCreado()" ng-hide="!isEntornoCreado()" ng-animate="{show: 'animated flipInX'}" >
 <widget skin="white" >
     <front titulo="Comparar estrategias" >
@@ -566,9 +486,7 @@
                 <td>{{estrategia.nombre}}</td>
                 <td>{{estrategia.epsilon? estrategia.epsilon : estrategia.tau}}</td>
                 <td>
-                    <button class="btn btn-danger btn-mini">
-                        <i class="icon-photon move_alt2"></i>
-                    </button>
+                    <a ng-click="grafico.quitarEstrategia($index)" ><span tooltip="Eliminar" ><img src="img/cancel.png" alt="cancel"/></span></a>
                 </td>
             </tr>
             <tr ng-hide="grafico.estrategiasAComparar.length > 3" >
@@ -597,7 +515,7 @@
                         No Disp.
                     </div>
                 </td>
-                <td><a class="btn btn-primary btn-mini" ng-click="grafico.agregarEstrategia(grafico.estrategia)" >Agregar</a></td>
+                <td><a ng-click="grafico.agregarEstrategia(grafico.estrategia)" ><span tooltip="Añadir" tooltip-placement="right" ><img src="img/addchart.png" alt="Agregar al gráfico"/></span></a></td>
             </tr>
             </tbody>
         </table>
@@ -668,12 +586,12 @@
             <div class="control-group row-fluid">
                 <div class="span3">
                 <table class="mapa">
-                    <tr><td ><a class="darken" style="cursor: url('img/cuentagotas.png') 0 21, crosshair;" ng-click="editor.seleccionarPincel('Bueno')" title="Buen camino" data-toggle="tooltip" id="pincel-camino-bueno" ><img src="img/juego/bueno.png" alt="" /></a></td></tr>
-                    <tr><td><a class="darken cuentagotas" style="cursor: url('img/cuentagotas.png') 0 21, crosshair;" ng-click="editor.seleccionarPincel('Excelente')"><img src="img/juego/excelente.png" alt=""/></a></td></tr>
-                    <tr><td><a class="darken cuentagotas" style="cursor: url('img/cuentagotas.png') 0 21, crosshair;" ng-click="editor.seleccionarPincel('Neutral')"><img src="img/juego/neutral.png" alt=""/></a></td></tr>
-                    <tr><td><a class="darken cuentagotas" style="cursor: url('img/cuentagotas.png') 0 21, crosshair;" ng-click="editor.seleccionarPincel('Malo')"><img src="img/juego/malo.png" alt=""/></a></td></tr>
-                    <tr><td><a class="darken cuentagotas" style="cursor: url('img/cuentagotas.png') 0 21, crosshair;" ng-click="editor.seleccionarPincel('Pozo')"><img src="img/juego/pozo.png" alt=""/></a></td></tr>
-                    <tr><td><a class="darken cuentagotas" style="cursor: url('img/cuentagotas.png') 0 21, crosshair;" ng-click="editor.seleccionarPincel('Pared')"><img src="img/juego/pared.png" alt=""/></a></td></tr>
+                    <tr><td ><a class="darken" style="cursor: url('img/cuentagotas.png') 0 21, crosshair;" ng-click="editor.seleccionarPincel('Bueno')" id="pincel-camino-bueno" ><span tooltip="Bueno" tooltip-placement="right" ><img src="img/juego/bueno.png" alt="" /></span></a></td></tr>
+                    <tr><td><a class="darken cuentagotas" style="cursor: url('img/cuentagotas.png') 0 21, crosshair;" ng-click="editor.seleccionarPincel('Excelente')"><span tooltip="Excelente" tooltip-placement="right" ><img src="img/juego/excelente.png" alt=""/></span></a></td></tr>
+                    <tr><td><a class="darken cuentagotas" style="cursor: url('img/cuentagotas.png') 0 21, crosshair;" ng-click="editor.seleccionarPincel('Neutral')"><span tooltip="Neutral" tooltip-placement="right" ><img src="img/juego/neutral.png" alt=""/></span></a></td></tr>
+                    <tr><td><a class="darken cuentagotas" style="cursor: url('img/cuentagotas.png') 0 21, crosshair;" ng-click="editor.seleccionarPincel('Malo')"><span tooltip="Malo" tooltip-placement="right" ><img src="img/juego/malo.png" alt=""/></span></a></td></tr>
+                    <tr><td><a class="darken cuentagotas" style="cursor: url('img/cuentagotas.png') 0 21, crosshair;" ng-click="editor.seleccionarPincel('Pozo')"><span tooltip="Pozo" tooltip-placement="right" ><img src="img/juego/pozo.png" alt=""/> </span></a></td></tr>
+                    <tr><td><a class="darken cuentagotas" style="cursor: url('img/cuentagotas.png') 0 21, crosshair;" ng-click="editor.seleccionarPincel('Pared')"><span tooltip="Pared" tooltip-placement="right" ><img src="img/juego/pared.png" alt=""/></span></a></td></tr>
                 </table></div>
                 <div class="span9">
                     <p  >Puntero:&nbsp;{{mensajes.editor.posicionHovered()}}.</p>

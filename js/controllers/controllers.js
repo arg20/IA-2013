@@ -394,6 +394,9 @@
 
                 this.estrategiasAComparar.push(nuevaEstrategia);
             },
+            quitarEstrategia: function(index) {
+                this.estrategiasAComparar.splice(index, 1);
+            },
             prepararDatos: function() {
                 if (typeof($scope.matrizQOptima) == "undefined") {
                     if ($scope.agente.entrenado) {
