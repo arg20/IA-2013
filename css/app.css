@@ -156,3 +156,17 @@ a.darken:hover img {
 .cuentagotas {
     cursor: url('../img/cuentagotas.png') 0 21, crosshair;
 }
+
+.raiser {
+    margin-top: -30px;
+}
+
+.integrantes li {
+    margin-top: 5px;
+}
+
+.integrantes
+{
+    list-style-type: none;
+    margin-left: 0px;
+}

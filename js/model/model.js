@@ -603,7 +603,7 @@ function Conocimiento(filas, columnas, cantidadDeAcciones, qInicial, mapa) {
 function PoliticaGreedy(agente, epsilon) {
     var self = this;
 
-    this.nombre = "Greedy";
+    this.nombre = "ε-Greedy";
     this.accionesExploracion = 0;
     this.accionesExplotacion = 0;
     this.epsilon = epsilon;
@@ -667,71 +667,6 @@ function PoliticaGreedy(agente, epsilon) {
         return accionElegida;
 
     }
-}
-
-function PoliticaEGreedy(agente, epsilon) {
-    this.nombre = "E-Greedy";
-
-    this.seleccionarAccion = function(estado) {
-
-        var valoresDeQEnEstado = agente.conocimiento.getValoresDeQEnEstado(estado);
-
-        //explora a menos que caiga dentro de la probabilidad aleatoria mas adelante
-        var accionElegida = -7;
-
-        var maxQ = -Number.MAX_VALUE;
-        var accionAsociadaAQmaximoRepetido = createArray(valoresDeQEnEstado.length);
-        var cantidadDeQsMaximosRepetidos = 0;
-
-        //Si  Math.random() > probabilidadAleatoria entonces usar el conocimiento adquirido
-        if (Math.random() > (1 - epsilon)) {
-
-            for (var accion = 0; accion < valoresDeQEnEstado.length; accion++) {
-
-                if (valoresDeQEnEstado[accion] > maxQ) {
-                    accionElegida = accion;
-                    maxQ = valoresDeQEnEstado[accion];
-                    cantidadDeQsMaximosRepetidos = 0;
-                    accionAsociadaAQmaximoRepetido[cantidadDeQsMaximosRepetidos] = accionElegida;
-                } else if (valoresDeQEnEstado[accion] == maxQ) {
-                    //entra aca si el mayor Q encontrado hasta ahora se da para mas de una accion.
-                    cantidadDeQsMaximosRepetidos++;
-                    accionAsociadaAQmaximoRepetido[cantidadDeQsMaximosRepetidos] = accion;
-                }
-            }
-
-            //(c) ver mas adelante
-            if (cantidadDeQsMaximosRepetidos > 0) {
-                var indiceAleatorio = getRandomInt(0,cantidadDeQsMaximosRepetidos - 1);
-                accionElegida = accionAsociadaAQmaximoRepetido[indiceAleatorio];
-            }
-        }
-
-        /*
-         *fin de la busqueda del mayor Q.. hasta aca hay varias posibilidaddes:
-         * a) Todos los Qs posibles para ese estado son 0.. (cuando el agente recien comienza a conocer el mapa)
-         * b) Salio que debe hacerse un movimiento aleatorio, asi que no se ejecuto la busqueda del mejor Q.
-         * c) Hay varios Q maximos para este estado y una accion dada, entonces elijo aleatoriamente las acciones que tengan ese Q.
-         * d) Hay un solo Q maximo para una accion en este estado, en cuyo caso, elijo esa accion.
-         */
-
-        // a y b) (accion aleatoria o Qs son 0).
-        if (accionElegida == -7) {
-            //System.out.println("Explorando");
-            accionElegida = getRandomInt(0,7);
-        }
-
-        // si elige una accion de forma aleatoria, puede ser que no sea valida, entonces, seguiremos eligiendo acciones hasta que salga una que lo es
-        while (!agente.entorno.isAccionValida(accionElegida)) {
-            var accionesValidas = agente.entorno.getAccionesValidasEnEstado();
-            accionElegida = accionesValidas[getRandomInt(0, accionesValidas.length)];
-        }
-
-        return accionElegida;
-
-    }
-
-
 }
 
 function PoliticaAleatoria(entorno) {
@@ -848,22 +783,39 @@ function Partida(entorno) {
         caminosRecorridos: {}
     };
 
-    this.correrPartida = function() {
+    this.correrPartida = function(callbacks) {
+        if (typeof callbacks == "undefined") {
+            callbacks = {}
+        }
         var movimientos = 20;
         var flagVueltasEnCiculos = false;
         var casillerosRecorridos = [];
         var nombreEstado = "(" + self.estado[0] + "," + self.estado[1] + ")";
         casillerosRecorridos.push(nombreEstado);
         var tipoCamino;
+        if ( typeof callbacks.prePartida === "function") {
+            callbacks.prePartida();
+        }
         while ( !entorno.isEstadoFinal() && (!flagVueltasEnCiculos || movimientos > 0 )) {
             var accion = entorno.agente.conocimiento.getMejorAccionPosible(self.estado);
             if (!entorno.isAccionValida(accion)) {
                 var accionesValidas = entorno.mapa.getAccionesValidas(self.estado[0], self.estado[1]);
                 accion = accionesValidas[getRandomInt(0,(accionesValidas.length -1))];
             }
-
             resultado.acciones.push(accion);
+            if ( typeof callbacks.preAccion === "function") {
+                callbacks.preAccion();
+            }
             self.estado = entorno.ejecutarAccion(accion);
+            if ( typeof callbacks.postAccion === "function") {
+                callbacks.postAccion();
+            }
+
+            /*
+            Comprobamos si se quedo en un bucle por ejemplo si no tuvo un buen aprendizaje.
+            Vamos guardando los nombres de los estados cada vez que pasamos por ellos en un arreglo.
+            Si no existen, agregamos el estado al arreglo, si ya existen, el agente esta en un bucle.
+             */
             var nombreEstado = "(" + self.estado[0] + "," + self.estado[1] + ")";
             if (($.inArray(nombreEstado, casillerosRecorridos)) > 0) {
                flagVueltasEnCiculos = true;

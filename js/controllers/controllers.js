@@ -92,15 +92,10 @@
                 $scope.agente.conocimiento.alpha = +this.qlearning.alfa;
                 $scope.agente.conocimiento.gamma = +this.qlearning.gamma;
                 $scope.agente.conocimiento.qInicial = +this.qlearning.qInicial;
-                /*                    $scope.agente.conocimiento.sufrirAmnesia();
-                 $scope.agente.conocimiento.inicializarConValor(+this.qlearning.qInicial);*/
                 $scope.agente.politica.epsilon = $scope.entrenamiento.politicaSeleccionada.epsilon;
                 if ( typeof callbacks.preEntrenamiento === "function") {
                     callbacks.preEntrenamiento();
                 }
-                /*console.log('Entrenando al agente! (' + $scope.entrenamiento.repeticiones + ' repeticiones)\n');
-                 console.log('Metodo de seleccion usado: ' + $scope.agente.politica.nombre);
-                 console.log($scope.agente.politica.epsilon);*/
                 this.repeticionActual = 0;
                 async(function () {
                     $scope.$apply(function () {
@@ -198,10 +193,10 @@
                     $scope.entrenamiento.repeticiones = 5000;
                     break;
                 case 8:
-                    $scope.entrenamiento.repeticiones = 75000;
+                    $scope.entrenamiento.repeticiones = 10000;
                     break;
                 default:
-                    $scope.entrenamiento.repeticiones = 100000;
+                    $scope.entrenamiento.repeticiones = 12000;
             }
             $scope.entorno.partidasJugadas = 0;
             $scope.posicionInicial = $scope.entorno.mapa.posicionAgente;
@@ -209,6 +204,7 @@
               i: $scope.mapa.filas - 1,
               j: $scope.mapa.columnas -1
             };
+
             Notifier.notify({
                 title: 'Creaci\xf3n, exitosa',
                 type: 'info',
@@ -364,6 +360,7 @@
         /*
          Generacion de graficos, experimental
          */
+
         $scope.grafico = {
             datos: [],
 
@@ -590,6 +587,9 @@
                 title: {
                     text: 'Comparación de Estrategias'
                 },
+                credits: {
+                    enabled: false
+                },
                 xAxis: {
                     title: {text: 'Episodios'},
                     type: 'linear'
@@ -621,4 +621,10 @@
                 series: $scope.grafico.datos
             }
         }
+
+        Highcharts.setOptions({
+            lang: {
+                resetZoom:'Resetear Zoom'
+            }
+        });
     }]);

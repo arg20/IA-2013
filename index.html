@@ -27,12 +27,14 @@
     <script type="text/javascript" src="js/model/model.js"></script>
     <script type="text/javascript" src="js/controllers/controllers.js"></script>
     <script type="text/javascript" src="js/controllers/directives.js"></script>
+    <script type="text/javascript" src="js/jquery.joyride-2.0.3.js"></script>
     <link rel="stylesheet" type="text/css" href="css/app.css" media="all"/>
 
     <link rel="stylesheet" type="text/css" href="css/photon-min.css" media="all"/>
     <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css" media="all"/>
     <link rel="stylesheet" type="text/css" href="css/photon-min-part2.css" media="all"/>
     <link rel="stylesheet" type="text/css" href="css/animate.min.css" media="all"/>
+    <link rel=" stylesheet" type="text/css" href="css/joyride-2.0.3.css">
 
 </head>
 <body ng-app="IA2013" class="body" ng-controller="AppCtrl">
@@ -41,14 +43,14 @@
 <div class="container-fluid dashboard dashboard-title">
     <div class="row-fluid">
         <div class="span12">
-            <h1>
+            <h1 id="titulo" class="titulo">
                 Inteligencia Artificial 2013
             </h1>
 
             <div class="btn-group">
                 <button type="button" class="btn btn-gear dropdown-toggle" data-toggle="dropdown"></button>
                 <ul class="dropdown-menu">
-                    <li><a href="javascript:">Integrantes del grupo</a></li>
+                    <li><a ng-click="integrantesModal.show()">Integrantes del grupo</a></li>
                     <li><a href="javascript:" ng-click="reseteador.show()">Resetear aplicación</a></li>
                     <li><a href="javascript:">Cargar partida</a></li>
                 </ul>
@@ -62,10 +64,10 @@
     <div class="row-fluid">
         <div class="span12">
             <ul id="sortable" class="ui-sortable">
-                <li>
+                <li id="tour-launcher" ng-show="isEntornoCreado()">
                     <img src="img/icons/ql1-2x.png" alt="Quick Launch Icon" data-original-title="" title="">
 
-                    <p>Ayuda</p>
+                    <p>Tour</p>
                 </li>
                 <li>
                     <img src="img/icons/ql2-2x.png" alt="Quick Launch Icon" data-original-title="" title="">
@@ -151,15 +153,15 @@
     <front titulo="Panel central">
         <h2 class="login-title" >Gestor de partida!</h2>
         <div class="login-member">
-            <p style="margin-top: 0px;">Pódes <a class="flipper" >editar</a> el entorno.</p>
-        <a class="btn btn-large btn-success" ng-click="crearEntorno()" ng-hide="isEntornoCreado()" ng-animate="{show:'animated bounceIn'}" >Crear Entorno!</a>
-        <a class="btn btn-large btn-inverse" ng-click="crearEntorno()" ng-show="isEntornoCreado()" ng-animate="{show:'animated flipInY'}" >Recrear Entorno!</a>
+            <p style="margin-top: 0px;">Pódes <a class="flipper" id="editar" >editar</a> el entorno.</p>
+        <a class="btn btn-large btn-success" ng-click="crearEntorno()" ng-hide="isEntornoCreado()" ng-animate="{show:'animated bounceIn'}" id="crear-entorno" >Crear Entorno!</a>
+        <a class="btn btn-large btn-inverse" ng-click="crearEntorno()" ng-show="isEntornoCreado()" ng-animate="{show:'animated flipInY'}" id="recrear-entorno" >Recrear Entorno!</a>
         </div>
         <span ng-show="isEntornoCreado()" ng-animate="'fade'" >
             <div class="opciones" style="text-align: center;">Opciones</div>
             <div class="btn-group"  style="margin-top: 5px;" ng-animate="{show:'animated flipInY', hide:'animated fadeOut'}" ng-show="isEntornoCreado()" >
-                <a class="btn btn-large btn-primary" ng-click="editor.show()"  >Inspección</a>
-                <a class="btn btn-large btn-danger" href="" ng-click="partida.show()">Partida</a>
+                <a class="btn btn-large btn-primary" ng-click="editor.show()" id="inspeccionar"  >Inspección</a>
+                <a id="partida" class="btn btn-large btn-danger" href="" ng-click="partida.show()">Partida</a>
             </div>
         </span>
     </front>
@@ -293,10 +295,10 @@
                 <li>Cantidad de ciclos
                     <span>{{entrenamiento.repeticiones}}</span>
                 </li>
-                <li>
-                    <span><a class=" btn btn-small btn-primary btn-mini"
+                <li >
+                    <span><a id="amnesia" class=" btn btn-small btn-primary btn-mini"
                              ng-click="amnesia()">Amnesia!</a></span>
-                    <span><a class=" btn btn-small btn-danger btn-mini" ng-click="entrenamiento.entrenarTimeout()">Entrenar!</a></span>
+                    <span><a id="entrenar" class=" btn btn-small btn-danger btn-mini" ng-click="entrenamiento.entrenarTimeout()">Entrenar!</a></span>
                 </li>
                 <li class="processed-pct">
                     Entrenamiento:&nbsp;&nbsp;<span>{{entrenamiento.getPorcentajeEntrenamiento()}}%</span>
@@ -319,8 +321,7 @@
                         <div class="controls">
                             <select name="multiFilter" style="margin:5px 0px; width:105px;"
                                     ng-model="entrenamiento.politicaSeleccionada.nombre" ng-change="entrenamiento.actualizarPolitica()">
-                                <option value="greedy">Greedy</option>
-                                <option value="e-greedy">Soft</option>
+                                <option value="greedy">ε-Greedy</option>
                                 <option value="aleatoria">Aleatoria</option>
                                 <option value="softmax">Softmax</option>
                             </select>
@@ -341,7 +342,7 @@
                                    style="margin: 0px 3px 0px 0px;" ng-model="entrenamiento.qlearning.gamma"/>
                             <input type="text" name="" placeholder="Q-inicial" class="input-mini"
                                    style="margin: 0px;" ng-model="entrenamiento.qlearning.qInicial"/>
-                            <a ><span tooltip="Ayuda" tooltip-placement="right" ><i class="icon-question-sign icon-white"> </i></span></a>
+                            <a ><span ng-click="qlearningModal.show()" tooltip="Ayuda" tooltip-placement="right" ><i class="icon-question-sign icon-white"> </i></span></a>
                         </div>
 
                     </div>
@@ -360,8 +361,7 @@
                                     <input style="margin: 0px; width: 50px;" id="grdy" type="text" placeholder="Epsilon" ng-model="entrenamiento.politicaSeleccionada.epsilon" ng-change="grafico.estrategia.actualizarLabel()" class="ng-pristine ng-valid">
                                 </div>
                             </div>
-                            <!--<strong style="color: white; font-size: 24px;">ε&nbsp;&nbsp;&nbsp;</strong><input type="text" name="" placeholder="Epsilon" class="input-small"
-                                   style="margin: 0px 0;" ng-model="entrenamiento.politicaSeleccionada.epsilon"/>-->
+
                         </div>
                     </div>
                 </div>
@@ -412,13 +412,13 @@
                 <li>
                      No se me ocurre que mostrar en esta seccion
                 </li>
-                <li class="smaller"><a class="btn btn-mini btn-primary" ng-click="establecerConocimientoActualComoPoliticaOptima()" >Óptima</a></li>
-                <li class="smaller"><a class="btn btn-mini btn-success" ng-click="entrenamiento.entrenarTimeout(callbacksParaEntrenamiento);graficoComparativoModal.show();" >Comparar</a></li>
+                <li class="smaller"><a id="qoptimo" class="btn btn-mini btn-primary" ng-click="establecerConocimientoActualComoPoliticaOptima()" >Q es óptimo</a></li>
+                <li class="smaller">ji</li>
                 <li class="bottom" style="padding-top: 1px;" >
                     <div style="float:left; margin-right: 10px;">
                         <div style="float: none; margin-left: 0px;">Explorador de la matriz Q</div>
                         <div style="float: left; margin: 10px 0px 0px 20px">
-                            i= <input type="number" min="0" max="{{entorno.mapa.indices.i}}" ng-model="consulta.fila" style="width: 35px; padding: 1px; margin-top: 5px;" placeholder="i" ng-change="consulta.consultarQs(consulta.fila, consulta.columna)" /> j=
+                            i= <input id="i" type="number" min="0" max="{{entorno.mapa.indices.i}}" ng-model="consulta.fila" style="width: 35px; padding: 1px; margin-top: 5px;" placeholder="i" ng-change="consulta.consultarQs(consulta.fila, consulta.columna)" /> j=
                             <input type="number" min="0" max="{{entorno.mapa.indices.j}}" ng-model="consulta.columna" placeholder="j" style="width: 35px; padding: 1px; margin-top: 5px;" ng-change="consulta.consultarQs(consulta.fila, consulta.columna)" />
                         </div></div>
                     <div style="float: right;">
@@ -458,11 +458,11 @@
 
  <span ng-show="isEntornoCreado()" ng-hide="!isEntornoCreado()" ng-animate="{show: 'animated flipInX'}" >
 <widget skin="white" >
-    <front titulo="Comparar estrategias" >
+    <front titulo="Comparar Estrategias" >
         <table class="table table-striped">
             <thead class="">
             <tr>
-                <th>#</th>
+                <th id="grafico">#</th>
                 <th>Política</th>
                 <th>Parámetros</th>
                 <th>Acciones</th>
@@ -471,7 +471,7 @@
             <tbody>
             <tr ng-repeat="estrategia in grafico.estrategiasAComparar" ng-animate="{enter: 'animated fadeInUp', leave: 'animated fadeOutUp'}" >
                 <td>{{$index + 1}}</td>
-                <td>{{estrategia.nombre}}</td>
+                <td style="text-transform: capitalize">{{estrategia.nombre}}</td>
                 <td>{{estrategia.epsilon? estrategia.epsilon : estrategia.tau}}</td>
                 <td>
                     <a ng-click="grafico.quitarEstrategia($index)" ><span tooltip="Eliminar" ><img src="img/cancel.png" alt="cancel"/></span></a>
@@ -480,15 +480,15 @@
             <tr ng-hide="grafico.estrategiasAComparar.length > 3" >
                 <td>{{grafico.estrategiasAComparar.length + 1}}</td>
                 <td>
-                    <select name="estrategiaSelecter" style="margin:0px; width:70px; height:20px;"
+                    <select name="estrategiaSelecter" style="margin:0px; width:85px; height:20px; padding: 0px;"
                             ng-model="grafico.estrategia.nombre" ng-change="grafico.estrategia.actualizarLabel()" >
-                        <option value="greedy">Greedy</option>
-                        <option value="e-greedy">Soft</option>
+                        <option value="greedy">ε-Greedy</option>
                         <option value="aleatoria">Aleatoria</option>
                         <option value="softmax">Softmax</option>
                     </select>
+
                 </td>
-                <td>
+                <td id="añadir">
                     <div ng-show="grafico.estrategia.nombre === 'greedy'" >
                         ε: <input style="margin: 0px; width: 45px; height:20px;" id="grdy" type="text" placeholder="Epsilon" ng-model="grafico.estrategia.parametros.epsilon" ng-change="grafico.estrategia.actualizarLabel()">
                     </div>
@@ -500,7 +500,7 @@
                         No Disp.
                     </div>
                 </td>
-                <td><a ng-click="grafico.agregarEstrategia(grafico.estrategia)" ><span tooltip="Añadir" tooltip-placement="right" ><img src="img/addchart.png" alt="Agregar al gráfico"/></span></a></td>
+                <td><a  ng-click="grafico.agregarEstrategia(grafico.estrategia)" ><span tooltip="Añadir" tooltip-placement="right" ><img src="img/addchart.png" alt="Agregar al gráfico"/></span></a></td>
             </tr>
             </tbody>
         </table>
@@ -638,9 +638,9 @@
         </div>
     </contenido>
     <bottom>
-        <button class="btn btn-inverse" ng-click="moverAgenteAleatoriamente()" aria-hidden="true">Resetear</button>
+        <button class="btn btn-inverse" ng-click="moverAgenteAleatoriamente()" aria-hidden="true">Mover Aleatoriamente</button>
         <button class="btn btn-danger" ng-click="partida.hide()" aria-hidden="true">Cerrar</button>
-        <button class="btn btn-success" ng-click="jugar()">Jugar</button>
+        <button class="btn btn-success" ng-click="jugar()">Iniciar</button>
     </bottom>
 </modal>
 
@@ -666,17 +666,153 @@
     </bottom>
 </modal>
 
-<modal header="Selección de política óptima" widgetvar="seleccionPoliticaOptimaModal" >
+<modal header="Ayuda sobre Q-learning" widgetvar="qlearningModal" >
     <contenido>
-        <p>Para poder crear el gráfico de comparación de estrategias de selección de acción, es necesario primero aproximar la política óptima.</p>
-        <p>El agente ya ha sido entrenado, desea seleccionar la Matriz Q actual como óptima? </p>
+        <p>Q-learning es una técnica de aprendizaje por refuerzo utilizada para encontrar o aproximar una política de selección de acción óptima para un proceso de decisión de Markov.</p>
+        <p>La actualización del Q asociado al par (estado, acción) se consigue mediante la fórmula:</p>
+        <img src="img/formulaQlearning.png" alt=""/>
+        <p>El factor de descuento gamma, cuyo valor actual es: <strong>{{entrenamiento.qlearning.gamma}}</strong> varía entre 0 y 1. Su función es la de regular el valor que tienen las recompensas futuras para el agente por sobre las inmediatas.</p>
     </contenido>
     <bottom>
-        <a class="btn btn-success" ng-click="establecerConocimientoActualComoPoliticaOptima();seleccionPoliticaOptimaModal.hide();" >Si</a>
-        <a class="btn btn-danger" ng-click="seleccionPoliticaOptimaModal.hide()" >No</a>
+        <a class="btn btn-danger" ng-click="qlearningModal.hide()" >Cerrar</a>
     </bottom>
 </modal>
 
+<modal header="Establecer Política óptima" widgetvar="tomarPoliticaOptimaModal" >
+    <contenido>
+        <p>Para generar el gráfico de comparación de estrategias de selección de acción durante el entrenamiento, debe primero
+            establecer cual es la política óptima. Para ello, primero se entrena exhaustivamente al agente. En nuestras pruebas, la
+            matriz Q suele estabilizarse luego de aproximadamente 5000 iteraciones en los mapas más grandes. Si ya ha entrenado al agente
+            Puede </p>
+    </contenido>
+    <bottom>
+        <button class="btn btn-danger" ng-click="graficoComparativoModal.hide()" aria-hidden="true">Cerrar</button>
+    </bottom>
+</modal>
+
+<modal header="Integrantes del grupo" widgetvar="integrantesModal" >
+    <contenido>
+        <p>El grupo está compuesto por:</p>
+        <ul class="integrantes">
+            <li>
+                <img src="img/grupo/jaqpp.jpg" class="img-polaroid" height="80" width="80" alt="jaqui"/>
+                <span>
+                    <h4 style="display: inline" >Alegre, </h4>
+                    Jaquelina.
+                </span>
+            </li>
+            <li>
+                <img src="img/grupo/crispp.jpg" class="img-polaroid" height="80" width="80" alt="Cris"/>
+                <span>
+                    <h4 style="display: inline" >
+                        García,
+                    </h4>
+                    Cristina.
+                </span>
+            </li>
+            <li>
+                <img src="img/grupo/gabpp.jpg" class="img-polaroid" height="80" width="80" alt="Gab"/>
+                <span>
+                    <h4 style="display: inline" >
+                        Sosa Zimmermann,
+                    </h4>
+                       Gabriel.
+                </span>
+            </li>
+        </ul>
+    </contenido>
+    <bottom>
+        <a class="btn btn-danger" ng-click="integrantesModal.hide()" >Cerrar</a>
+    </bottom>
+</modal>
+
+<ol id="tour" style="display: none">
+    <li data-class="titulo" data-button="Siguiente" class="raiser">
+        <h2>#1 Parada</h2>
+        <p>Trabajo Práctico Integrador.</p>
+        <p> <strong>Cátedra: </strong> Inteligencia Artificial.
+
+            <strong>Universidad Tecnológica Nacional. Facultad Regional Resistencia</strong>. Año&nbsp;<strong>2013</strong></p>
+    </li>
+    <li data-id="recrear-entorno" data-button="Siguiente" class="raiser">
+        <h2>#2 Parada</h2>
+        <p>El primer paso para usar la aplicación es crear un mapa y un agente.</p>
+    </li>
+    <li data-id="editar" data-button="Siguiente" class="raiser">
+        <h2>#3 Parada</h2>
+        <p>También es posible cambiar el mapa, crear uno nuevo y ajustar las recompensas del entorno.</p>
+    </li>
+    <li data-id="inspeccionar" data-button="Siguiente" class="raiser">
+        <h2>#4 Parada</h2>
+        <p>En la ventana inspeccionar puede editarse el mapa, pintandolo o arrastrando la meta al casillero deseado.</p>
+        <p>También es posible ver los valores de la función Q una vez que el agente fue entrenado.</p>
+    </li>
+    <li data-id="entrenar" data-button="Siguiente" class="raiser">
+        <h2>#5 Parada</h2>
+        <p>Una vez creado y/o editado el mapa, se puede entrenar al agente haciendo click en "entrenar!".</p>
+        <p>Al dorso del menu (clickando el icono del engranaje) se puede configurar el entrenamiento.</p>
+    </li>
+    <li data-id="amnesia" data-button="Siguiente" class="raiser">
+        <h2>#6 Parada</h2>
+        <p>Si se desea olvidar todo el aprendizaje, el botón "amnesia!" resetea sus conocimientos.</p>
+    </li>
+    <li data-id="partida" data-button="Siguiente" class="raiser">
+        <h2>#7 Parada</h2>
+        <p>Una vez que el agente fue entrenado, puede entrar en partida para hacer las pruebas necesarias.</p>
+        <p>Es posible arrastrar el agente para posicionarlo en la posición en que se desea hacer las pruebas.</p>
+    </li>
+    <li data-id="grafico" data-button="Siguiente paso" class="raiser">
+        <h2>#8 Parada</h2>
+        <p>Para crear un grafico primero es necesario seguir una serie de pasos:</p>
+        <p>
+            <strong>PASO 1:</strong> Entrenar al agente aproximando la política óptima.
+        </p>
+    </li>
+    <li data-id="qoptimo" data-button="Siguiente" class="raiser">
+        <h2>#9 Parada</h2>
+        <p>
+            <strong>PASO 2:</strong> Fijar la matriz Q actual como óptima aproximada.
+        </p>
+    </li>
+    <li data-id="añadir" data-button="Siguiente" class="raiser">
+        <h2>#10 Parada</h2>
+        <p>
+            <strong>PASO 3:</strong> Añadir estrategias a comparar.
+        </p>
+    </li>
+    <li data-id="añadir" data-button="Siguiente" class="raiser">
+        <h2>#11 Parada</h2>
+        <p>
+            <strong>PASO 4:</strong> Presionar "Crear gráfico" al dorso de este menu y luego "Ver gráfico".
+        </p>
+    </li>
+    <li data-button="Finalizar" class="raiser">
+        <h2>#12 Parada</h2>
+        <p>
+            Integrantes del Grupo:
+        </p>
+        <ul>
+            <li>Alegre, Jaquelina</li>
+            <li>García, Cristina</li>
+            <li>Sosa Zimmermann, Gabriel</li>
+        </ul>
+        <p>
+            Hecho en <strong>AngularJS</strong>. Plantilla: <strong>Photon UI</strong>.
+        </p>
+    </li>
+</ol>
+<script>
+
+
+
+    $(window).load(function() {
+        $("#tour").joyride({});
+
+        $('#tour-launcher').bind('click', function() {
+            $("#tour").joyride({});
+        });
+    });
+</script>
 
 </body>
 </html>
