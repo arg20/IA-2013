@@ -28,7 +28,12 @@
             pozos: 3,
             aleatorio: true,
             recompensaMeta: 90,
-            castigoMuerte: -100
+            castigoMuerte: -100,
+            actualizarMeta: function() {
+                if (typeof $scope.entorno != undefined) {
+                    $scope.entorno.recompensaMeta = this.recompensaMeta;
+                }
+            }
         };
 
         $scope.TipoCamino = TipoCamino;
@@ -97,6 +102,7 @@
                     callbacks.preEntrenamiento();
                 }
                 this.repeticionActual = 0;
+                var comienzoEntrenamiento = new Date();
                 async(function () {
                     $scope.$apply(function () {
                         for (var start = +new Date(); $scope.entrenamiento.repeticionActual < $scope.entrenamiento.repeticiones && +new Date() - start < 200; $scope.entrenamiento.repeticionActual++) {
@@ -117,6 +123,11 @@
                     if ($scope.entrenamiento.repeticionActual < $scope.entrenamiento.repeticiones) {
                         async(arguments.callee);
                     } else {
+                        var finDeEntrenamiento = new Date();
+                        var diferencia = finDeEntrenamiento - comienzoEntrenamiento;
+                        console.log(diferencia);
+                        diferencia = new Date(diferencia);
+                        $scope.entrenamiento.tiempoDeEntrenamiento = diferencia.getSeconds() + 's, ' + diferencia.getMilliseconds() + 'ms';
                         if ( typeof callbacks.postEntrenamiento === "function") {
                             callbacks.postEntrenamiento();
                         }
@@ -182,6 +193,7 @@
             $scope.entrenamiento.resetearEntrenamiento();
             var config = $scope.configuracionEntorno;
             $scope.entorno = new Entorno(config.filas, config.columnas, config.paredes, config.pozos);
+            $scope.entorno.recompensaMeta = $scope.configuracionEntorno.recompensaMeta;
             $scope.mapa = $scope.entorno.mapa;
             console.log($scope.entorno.mapa.toString());
             $scope.crearAgente();
@@ -504,7 +516,7 @@
 
                     porcentajeFaltante /= cantidadDeVariaciones;
                     porcentajeAprendido = 100 - porcentajeFaltante;
-                    $scope.grafico.datosTemp.push([numeroIteracion,porcentajeAprendido]);
+                    $scope.grafico.datosTemp.push([numeroIteracion,Math.abs(porcentajeAprendido)]);
                 }
             },
             postEntrenamiento: function() {

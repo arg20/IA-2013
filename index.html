@@ -226,7 +226,7 @@
                             <div class="controls">
 
                                 <input type="text" name="" class="input-mini" style="margin-left: 0px;margin-top: 0px;"
-                                       ng-model="configuracionEntorno.recompensaMeta"/>
+                                       ng-model="configuracionEntorno.recompensaMeta" ng-change="configuracionEntorno.actualizarMeta()"/>
 
                             <input type="text" name="" class="input-mini" style="margin-left: 5px;margin-top: 0px;"
                                    ng-model="TipoCamino.POZO.recompensa"/>
@@ -410,7 +410,10 @@
 
             <ul>
                 <li>
-                     No se me ocurre que mostrar en esta seccion
+                     <span ng-show="entrenamiento.completado">
+                         Tiempo de entrenamiento <br>
+                         {{entrenamiento.tiempoDeEntrenamiento}}
+                     </span>
                 </li>
                 <li class="smaller"><a id="qoptimo" class="btn btn-mini btn-primary" ng-click="establecerConocimientoActualComoPoliticaOptima()" >Q es óptimo</a></li>
                 <li class="smaller">ji</li>
