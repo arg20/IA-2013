@@ -52,7 +52,6 @@
                 <ul class="dropdown-menu">
                     <li><a ng-click="integrantesModal.show()">Integrantes del grupo</a></li>
                     <li><a href="javascript:" ng-click="reseteador.show()">Resetear aplicación</a></li>
-                    <li><a href="javascript:">Cargar partida</a></li>
                 </ul>
             </div>
         </div>
@@ -69,20 +68,12 @@
 
                     <p>Tour</p>
                 </li>
-                <li>
-                    <img src="img/icons/ql2-2x.png" alt="Quick Launch Icon" data-original-title="" title="">
-
-                    <p>Estadísticas</p>
-                </li>
-                <li>
+                <li id="paper">
                     <img src="img/icons/ql5-2x.png" alt="Quick Launch Icon" data-original-title="" title="">
-
                     <p>Paper</p>
                 </li>
-                <li class="add-ql">
-                    <a href="#modal-add-quick-launch" data-toggle="modal">
-                        <div class="add-quick-launch" data-toggle="modal" id="addql"></div>
-                    </a>
+                <li >
+
                 </li>
             </ul>
         </div>
@@ -410,13 +401,16 @@
 
             <ul>
                 <li>
+                    <span ng-hide="entrenamiento.completado">
+                         Primero debe entrenar el agente.
+                    </span>
                      <span ng-show="entrenamiento.completado">
                          Tiempo de entrenamiento <br>
                          {{entrenamiento.tiempoDeEntrenamiento}}
                      </span>
                 </li>
                 <li class="smaller"><a id="qoptimo" class="btn btn-mini btn-primary" ng-click="establecerConocimientoActualComoPoliticaOptima()" >Q es óptimo</a></li>
-                <li class="smaller">ji</li>
+                <li class="smaller">Matriz Q</li>
                 <li class="bottom" style="padding-top: 1px;" >
                     <div style="float:left; margin-right: 10px;">
                         <div style="float: none; margin-left: 0px;">Explorador de la matriz Q</div>
@@ -534,6 +528,8 @@
                     <a class="btn btn-primary" ng-click="grafico.prepararDatos()" >Crear gráfico</a>
 
                     <a style="margin-top: 5px;" class="btn btn-success" ng-click="graficoComparativoModal.show()" ng-show="isGraficoComparativoCreado" ng-animate="{show: 'animated flipInX'}" >&nbsp;&nbsp;Ver Gráfico&nbsp;</a>
+
+                    <a style="margin-top: 5px;" class="btn btn-inverse" ng-click="tiemposModal.show()" ng-show="isGraficoComparativoCreado" ng-animate="{show: 'animated flipInX'}" >&nbsp;&nbsp;Ver Tiempos&nbsp;</a>
                 </div>
             </div>
         </div>
@@ -661,11 +657,26 @@
     <contenido>
         <p>Para generar el gráfico de comparación de estrategias de selección de acción durante el entrenamiento, debe primero
         establecer cual es la política óptima. Para ello, primero se entrena exhaustivamente al agente. En nuestras pruebas, la
-        matriz Q suele estabilizarse luego de aproximadamente 5000 iteraciones en los mapas más grandes. Si ya ha entrenado al agente
-        Puede </p>
+        matriz Q suele estabilizarse luego de aproximadamente 5000 iteraciones en los mapas más grandes.</p>
+        <p>Si ya ha entrenado al agente puede hacer click en el botón azúl "Q es óptimo".</p>
+
     </contenido>
     <bottom>
-        <button class="btn btn-danger" ng-click="graficoComparativoModal.hide()" aria-hidden="true">Cerrar</button>
+        <button class="btn btn-danger" ng-click="tomarPoliticaOptimaModal.hide()" aria-hidden="true">Cerrar</button>
+    </bottom>
+</modal>
+
+<modal header="Tiempos en aproximar política óptima" widgetvar="tiemposModal" >
+    <contenido>
+        <p>Los tiempos de cada algoritmo en aproximar la política óptima fueron:</p>
+        <ul>
+            <li ng-repeat="estrategia in grafico.tiempos" >
+                 Estrategia: <strong>{{estrategia.nombre}}</strong>. Tiempo: <strong>{{estrategia.tiempo}}</strong>.
+            </li>
+        </ul>
+    </contenido>
+    <bottom>
+        <button class="btn btn-danger" ng-click="tiemposModal.hide()" aria-hidden="true">Cerrar</button>
     </bottom>
 </modal>
 
@@ -678,18 +689,6 @@
     </contenido>
     <bottom>
         <a class="btn btn-danger" ng-click="qlearningModal.hide()" >Cerrar</a>
-    </bottom>
-</modal>
-
-<modal header="Establecer Política óptima" widgetvar="tomarPoliticaOptimaModal" >
-    <contenido>
-        <p>Para generar el gráfico de comparación de estrategias de selección de acción durante el entrenamiento, debe primero
-            establecer cual es la política óptima. Para ello, primero se entrena exhaustivamente al agente. En nuestras pruebas, la
-            matriz Q suele estabilizarse luego de aproximadamente 5000 iteraciones en los mapas más grandes. Si ya ha entrenado al agente
-            Puede </p>
-    </contenido>
-    <bottom>
-        <button class="btn btn-danger" ng-click="graficoComparativoModal.hide()" aria-hidden="true">Cerrar</button>
     </bottom>
 </modal>
 
@@ -813,6 +812,10 @@
 
         $('#tour-launcher').bind('click', function() {
             $("#tour").joyride({});
+        });
+
+        $('#paper').bind('click', function() {
+            window.location.href = "doc/Paper.IA.G7.pdf";
         });
     });
 </script>

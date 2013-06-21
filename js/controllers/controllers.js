@@ -7,7 +7,7 @@
         window.appCtrl = angular.element('[ng-controller=AppCtrl]').scope();
         $scope.mapa = { filas: 6 };
         $scope.mensajes = {
-            mensajeJuego: 'Partida amigable',
+            mensajeJuego: 'Arrastre el agente y luego haga click en Iniciar',
             editor: {
                 mouseSobre: {
                     x: '0',
@@ -27,7 +27,7 @@
             paredes: 4,
             pozos: 3,
             aleatorio: true,
-            recompensaMeta: 90,
+            recompensaMeta: 200,
             castigoMuerte: -100,
             actualizarMeta: function() {
                 if (typeof $scope.entorno != undefined) {
@@ -378,6 +378,7 @@
 
             estrategiasAComparar: [],
             episodiosAGraficar: 3000,
+            tiempos: [],
             estrategia: {
                 nombre: 'greedy',
                 parametros: {
@@ -413,7 +414,7 @@
             prepararDatos: function() {
                 if (typeof($scope.matrizQOptima) == "undefined") {
                     if ($scope.agente.entrenado) {
-                        $scope.seleccionPoliticaOptimaModal.show();
+                        $scope.tomarPoliticaOptimaModal.show();
                     } else {
                         Notifier.notify({
                             title: 'No fue definida una política óptima',
@@ -476,6 +477,8 @@
                 }
                 $scope.grafico.matrizVariaciones = matrizVariaciones;
                 $scope.grafico.cantidadDeVariados = cantidadDeVariados;
+                $scope.tiempoInicioProcesamiento = new Date();
+                $scope.tiempoCalculado = false;
             },
             preRepeticion: function(numeroIteracion) {
                 if (numeroIteracion % $scope.intervalo == 0 || numeroIteracion === 1) {
@@ -516,7 +519,19 @@
 
                     porcentajeFaltante /= cantidadDeVariaciones;
                     porcentajeAprendido = 100 - porcentajeFaltante;
-                    $scope.grafico.datosTemp.push([numeroIteracion,Math.abs(porcentajeAprendido)]);
+                    $scope.grafico.datosTemp.push([numeroIteracion,porcentajeAprendido]);
+                    if (porcentajeAprendido > 95 && !$scope.tiempoCalculado ) {
+                        $scope.tiempoFinProcesamiento = new Date();
+                        $scope.tiempoProcesamiento = $scope.tiempoFinProcesamiento - $scope.tiempoInicioProcesamiento;
+                        var diferencia = new Date($scope.tiempoProcesamiento);
+                        var tiempoString = diferencia.getSeconds() + 's, ' + diferencia.getMilliseconds() + 'ms';
+                        $scope.tiempoCalculado = true;
+                        $scope.grafico.tiempos.push({
+                            nombre: $scope.estrategiaProcesadaActualmente.label,
+                            tiempo: tiempoString
+                        });
+                        console.log($scope.grafico.tiempos);
+                    }
                 }
             },
             postEntrenamiento: function() {
@@ -535,6 +550,7 @@
                     $scope.crearGraficoComparativo();
                     $scope.isGraficoComparativoCreado = true;
                 }
+
             }
         }
 
