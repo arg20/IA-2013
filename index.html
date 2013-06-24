@@ -655,14 +655,15 @@
 
 <modal header="Establecer Política óptima" widgetvar="tomarPoliticaOptimaModal" >
     <contenido>
-        <p>Para generar el gráfico de comparación de estrategias de selección de acción durante el entrenamiento, debe primero
-        establecer cual es la política óptima. Para ello, primero se entrena exhaustivamente al agente. En nuestras pruebas, la
+        <p>Para generar el gráfico de comparación de estrategias de selección de acción durante el entrenamiento, <strong>debe primero
+        establecer cual es la política óptima</strong>. Para ello, primero se entrena exhaustivamente al agente. En nuestras pruebas, la
         matriz Q suele estabilizarse luego de aproximadamente 5000 iteraciones en los mapas más grandes.</p>
-        <p>Si ya ha entrenado al agente puede hacer click en el botón azúl "Q es óptimo".</p>
+        <p>Como ya ha entrenado al agente, puede hacer click en el botón azúl <strong>"Q es óptimo"</strong>, o en el botón <strong>"Asumir Q optimo"</strong> de esta ventana para <strong>asumir el Conocimiento actual como óptimo</strong>.</p>
 
     </contenido>
     <bottom>
         <button class="btn btn-danger" ng-click="tomarPoliticaOptimaModal.hide()" aria-hidden="true">Cerrar</button>
+        <button class="btn btn-success" ng-click="establecerConocimientoActualComoPoliticaOptima(); grafico.prepararDatos(); tomarPoliticaOptimaModal.hide();" aria-hidden="true">Asumir Q Optimo</button>
     </bottom>
 </modal>
 
