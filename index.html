@@ -21,6 +21,7 @@
     <script type="text/javascript" src="js/jquery.pnotify.min.js"></script>
 
     <script type="text/javascript" src="js/highcharts.js"></script>
+    <script src="http://code.highcharts.com/modules/exporting.js"></script>
 
 
     <script type="text/javascript" src="js/model/util.js"></script>
@@ -525,11 +526,11 @@
                     </div>
                 </div>
                 <div class="span8" style="padding-top: 35px;">
-                    <a class="btn btn-primary" ng-click="grafico.prepararDatos()" >Crear gráfico</a>
+                    <a class="btn btn-primary" ng-click="grafico.prepararDatos()" >Crear</a>
 
-                    <a style="margin-top: 5px;" class="btn btn-success" ng-click="graficoComparativoModal.show()" ng-show="isGraficoComparativoCreado" ng-animate="{show: 'animated flipInX'}" >&nbsp;&nbsp;Ver Gráfico&nbsp;</a>
+                    <a class="btn btn-success" ng-click="graficoComparativoModal.show()" ng-show="isGraficoComparativoCreado" ng-animate="{show: 'animated flipInX'}" >&nbsp;&nbsp;Ver&nbsp;</a>
 
-                    <a style="margin-top: 5px;" class="btn btn-inverse" ng-click="tiemposModal.show()" ng-show="isGraficoComparativoCreado" ng-animate="{show: 'animated flipInX'}" >&nbsp;&nbsp;Ver Tiempos&nbsp;</a>
+                    <a style="margin-top: 5px; width:95px;" class="btn btn-inverse" ng-click="tiemposModal.show()" ng-show="isGraficoComparativoCreado" ng-animate="{show: 'animated flipInX'}" >&nbsp;&nbsp;Tiempos&nbsp;</a>
                 </div>
             </div>
         </div>
