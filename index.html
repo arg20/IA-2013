@@ -59,7 +59,7 @@
     </div>
 </div>
 
-<!--Barrita de menu-->
+<!--Menu-->
 <div class="container-fluid dashboard dashboard-quick-launch">
     <div class="row-fluid">
         <div class="span12">
@@ -95,7 +95,6 @@
                     <span>{{isEntornoCreado()?  "Creado" : "No creado" }}</span>
                     <img ng-src="img/circulo-rojo.png" ng-hide="isEntornoCreado()" >
                     <img ng-src="img/circulo-verde.png" ng-show="isEntornoCreado()" ng-animate="{show: 'animated wobble'}" >
-                    <!--<img ng-src="img/{{isEntornoCreado() && 'circulo-verde' || 'circulo-rojo' }}.png" alt="Arrow up">-->
                 </div>
             </li>
             <li>
@@ -112,7 +111,6 @@
                     <span>{{agente.entrenado? "Entrenado" : "Sin entrenar" }}</span>
                     <img ng-src="img/circulo-rojo.png" ng-hide="agente.entrenado" ng-animate="{show: 'animated wobble'}" >
                     <img ng-src="img/circulo-verde.png" ng-show="agente.entrenado" ng-animate="{show: 'animated wobble'}" >
-                    <!--<img ng-src="img/{{agente.entrenado && 'circulo-verde' || 'circulo-rojo' }}.png" alt="Arrow up">-->
                 </div>
             </li>
             <li>
@@ -203,8 +201,6 @@
                     <div class="row-fluid" style="margin-top: 5px;">
                         <div class="span12">
                             <label class="control-label" style="display:inline-block; "><strong>Premio & Castigo</strong></label>
-<!--                            <input type="checkbox" name="aleatorio" id="aleatorio" ng-model="configuracionEntorno.aleatorio"
-                                   style="margin:5px 0px; display:inline-block; "/>-->
                         </div>
                     </div>
 
@@ -333,7 +329,7 @@
                             <input type="text" name="" placeholder="Gamma" class="input-mini" tooltip="Factor de descuento" tooltip-placement="bottom" tooltip-trigger="focus"
                                    style="margin: 0px 3px 0px 0px;" ng-model="entrenamiento.qlearning.gamma"/>
                             <input type="text" name="" placeholder="Q-inicial" class="input-mini"
-                                   style="margin: 0px;" ng-model="entrenamiento.qlearning.qInicial"/>
+                                   style="margin: 0px;" ng-model="entrenamiento.qlearning.qInicial" tooltip="Inicialización optimista" tooltip-placement="bottom" tooltip-trigger="focus"/>
                             <a ><span ng-click="qlearningModal.show()" tooltip="Ayuda" tooltip-placement="right" ><i class="icon-question-sign icon-white"> </i></span></a>
                         </div>
 
@@ -349,8 +345,16 @@
                         <div class="controls">
                             <div ng-show="grafico.estrategia.nombre === 'greedy'" style="">
                                 <div class="input-prepend">
-                                    <span class="add-on" style="color: black;" >ε</span>
-                                    <input style="margin: 0px; width: 50px;" id="grdy" type="text" placeholder="Epsilon" ng-model="entrenamiento.politicaSeleccionada.epsilon" ng-change="grafico.estrategia.actualizarLabel()" class="ng-pristine ng-valid">
+                                    <span class="add-on" style="color: black;" >ε<sub>i</sub> </span>
+                                    <input style="margin: 0px; width: 50px;" id="epsilonInicial" type="text" placeholder="Epsilon" ng-model="entrenamiento.politicaSeleccionada.epsilon" ng-change="grafico.estrategia.actualizarLabel()" class="ng-pristine ng-valid">
+                                </div>&nbsp;-&nbsp;
+                                <div class="input-prepend">
+                                    <span class="add-on" style="color: black;" >ε<sub>f</sub></span>
+                                    <input style="margin: 0px; width: 50px;" id="epsilonFinal" type="text" placeholder="Epsilon" ng-model="entrenamiento.politicaSeleccionada.epsilonFinal" ng-change="grafico.estrategia.actualizarLabel()" class="ng-pristine ng-valid">
+                                </div>
+                                <div class="input-prepend">
+                                    <span class="add-on" style="color: black;" >Δ</span>
+                                    <input style="margin: 0px; width: 50px; padding:2px;" id="step" type="number" placeholder="Epsilon" ng-model="entrenamiento.politicaSeleccionada.step" ng-change="grafico.estrategia.actualizarLabel()" class="ng-pristine ng-valid" tooltip="Step para ε" tooltip-placement="top">
                                 </div>
                             </div>
 
@@ -372,8 +376,6 @@
                                 <span class="add-on" style="color: black;" >τ</span>
                                 <input style="margin: 0px; width: 50px;" id="grdy" type="text" placeholder="Tau" ng-model="entrenamiento.politicaSeleccionada.tau" ng-change="grafico.estrategia.actualizarLabel()" class="ng-pristine ng-valid">
                             </div>
-                            <!--<strong style="color: white; font-size: 24px;">τ</strong>= &nbsp;<input type="text" name="" placeholder="tau" class="input-small"
-                                   style="margin: 0px 0;" ng-model="entrenamiento.politicaSeleccionada.tau"/>-->
                         </div>
                     </div>
                 </div>
@@ -384,9 +386,6 @@
 
     <widget skin="white" widgetVar="resultadoEntrenamiento">
         <front titulo="Informe del Coach">
-            <!--<p class="widget-description" style="margin: 5px;" ng-hide="entrenamiento.completado">
-                Se mostrarán los resultados del entrenamiento una vez que haya entrenado al agente.
-            </p>-->
             <img src="img/agente-min.png" class="img-rounded" style="height: 198px;" alt="agente-meme" ng-hide="entrenamiento.completado" />
             <span ng-show="entrenamiento.completado">
 

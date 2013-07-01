@@ -437,7 +437,7 @@ function Agente(entorno) {
     this.politica = undefined;
 
     // execute one epoch
-    this.hacerRepeticion = function() {
+    this.hacerRepeticion = function(numeroDeRepeticion) {
 
         // Reset estado to start position defined by the world.
         self.entorno.resetearEstado();
@@ -452,7 +452,7 @@ function Agente(entorno) {
             estadoAnterior = self.entorno.getEstado();
 
             //Yo, el agente, decido la proxima accion que voy a tomar teniendo en cuenta mi politica (greedy, softmax, etc)
-            accion = self.politica.seleccionarAccion(self.entorno.getEstado());
+            accion = self.politica.seleccionarAccion(self.entorno.getEstado(), numeroDeRepeticion);
             //System.out.print(accion);
 
             //ya decidi mi accion, ahora se la comunico a mi entorno, es decir, la llevo a cabo.
@@ -600,15 +600,31 @@ function Conocimiento(filas, columnas, cantidadDeAcciones, qInicial, mapa) {
 
 
 
-function PoliticaGreedy(agente, epsilon) {
+function PoliticaGreedy(agente, epsilon, epsilonFinal, step) {
     var self = this;
+    this.epsilonFinal = epsilonFinal || epsilon;
+    this.step = step || 1;
 
     this.nombre = "ε-Greedy";
     this.accionesExploracion = 0;
     this.accionesExplotacion = 0;
-    this.epsilon = epsilon;
+    this.epsilon = parseFloat(epsilon);
+    //Iteraciones totales de todo el entrenamiento
+    this.iteraciones = 1;
+    this.ultimaIteracionActualizada = 0;
 
-    this.seleccionarAccion = function(estado) {
+    this.calcularIncremento = function() {
+        var cantidadDeIncrementos = self.iteraciones / self.step;
+        self.variacionEpsilon = (self.epsilonFinal - self.epsilon) / cantidadDeIncrementos;
+    }
+
+    this.seleccionarAccion = function(estado, iteracion) {
+
+
+        if (iteracion % self.step === 0 && iteracion !== self.ultimaIteracionActualizada ) {
+           self.ultimaIteracionActualizada = iteracion;
+           self.epsilon += self.variacionEpsilon;
+        }
 
         var valoresDeQEnEstado = agente.conocimiento.getValoresDeQEnEstado(estado);
 
@@ -658,8 +674,8 @@ function PoliticaGreedy(agente, epsilon) {
             accionElegida = getRandomInt(0,7);
         }
 
-        // si elige una accion de forma aleatoria, puede ser que no sea valida, entonces, seguiremos eligiendo acciones hasta que salga una que lo es
-        while (!agente.entorno.isAccionValida(accionElegida)) {
+        // si elige una accion de forma aleatoria, puede ser que no sea valida, entonces, pedimos al entorno las acciones validas y elegimos desde ahi.
+        if (!agente.entorno.isAccionValida(accionElegida)) {
             var accionesValidas = agente.entorno.getAccionesValidasEnEstado();
             accionElegida = accionesValidas[getRandomInt(0, accionesValidas.length)];
         }
@@ -673,9 +689,11 @@ function PoliticaAleatoria(entorno) {
 
     this.seleccionarAccion = function (estado) {
 
-        var accionElegida = 0;
-        var accionesValidas = entorno.getAccionesValidasEnEstado();
-        accionElegida = accionesValidas[getRandomInt(0, accionesValidas.length)];
+        var accionElegida = getRandomInt(0,7);
+        if (entorno.isAccionValida(accionElegida)) {
+            var accionesValidas = entorno.getAccionesValidasEnEstado();
+            accionElegida = accionesValidas[getRandomInt(0, accionesValidas.length)];
+        }
         return accionElegida;
     };
 

@@ -47,6 +47,8 @@
                 nombre: 'greedy',
                 tau: 200,
                 epsilon: 0.3,
+                epsilonFinal: 0.3,
+                step: 1,
                 isGreedySeleccionado: function () {
                     return $scope.entrenamiento.politicaSeleccionada.nombre === 'greedy';
                 },
@@ -59,7 +61,7 @@
             },
             seleccionarPolitica: function (agente, parametros) {
                 if (parametros.nombre === 'greedy') {
-                    agente.politica = new PoliticaGreedy(agente, parametros.epsilon);
+                    agente.politica = new PoliticaGreedy(agente, parametros.epsilon, parametros.epsilonFinal, parametros.step);
                 } else if (parametros.nombre === 'aleatoria') {
                     agente.politica = new PoliticaAleatoria(agente.entorno);
                 } else if (parametros.nombre === 'e-greedy') {
@@ -97,7 +99,19 @@
                 $scope.agente.conocimiento.alpha = +this.qlearning.alfa;
                 $scope.agente.conocimiento.gamma = +this.qlearning.gamma;
                 $scope.agente.conocimiento.qInicial = +this.qlearning.qInicial;
-                $scope.agente.politica.epsilon = $scope.entrenamiento.politicaSeleccionada.epsilon;
+                if($scope.agente.politica.nombre === "ε-Greedy") {
+                    $scope.agente.politica.epsilon = parseFloat($scope.entrenamiento.politicaSeleccionada.epsilon);
+                    $scope.agente.politica.epsilonFinal = parseFloat($scope.entrenamiento.politicaSeleccionada.epsilonFinal);
+                    $scope.agente.politica.step = parseFloat($scope.entrenamiento.politicaSeleccionada.step);
+                    $scope.agente.politica.iteraciones = $scope.entrenamiento.repeticiones;
+                    $scope.agente.politica.calcularIncremento();
+                    console.log("Entrenando agente con: " +
+                        "\n Politica: ε-greedy " +
+                        "\n Epsilon inicial: " + $scope.agente.politica.epsilon +
+                        "\n Epsilon final: " + $scope.agente.politica.epsilonFinal +
+                        "\n Variando el epsilon cada " + $scope.agente.politica.step + " iteraciones" +
+                        "\n Con una variación de: " + $scope.agente.politica.variacionEpsilon);
+                }
                 if ( typeof callbacks.preEntrenamiento === "function") {
                     callbacks.preEntrenamiento();
                 }
@@ -109,7 +123,7 @@
                             if ( typeof callbacks.preRepeticion === "function") {
                                 callbacks.preRepeticion($scope.entrenamiento.repeticionActual);
                             }
-                            $scope.agente.hacerRepeticion();
+                            $scope.agente.hacerRepeticion($scope.entrenamiento.repeticionActual);
                             if ( typeof callbacks.postRepeticion === "function") {
                                 callbacks.postRepeticion($scope.entrenamiento.repeticionActual);
                             }
@@ -281,6 +295,7 @@
             $scope.entorno.resetearEstado();
             $scope.posicionInicial = new Posicion($scope.entorno.mapa.posicionAgente);
         };
+
         $scope.jugar = function () {
             $scope.entorno.partidasJugadas++;
             $scope.corrida = new Partida($scope.entorno);
@@ -345,22 +360,29 @@
             revert: 'invalid',
             revertDuration: 150
         }
+        /*
+        Funcion que cambia el cursor en chrome cuando se arrastra la meta o el agente
+         */
         $scope.cursorChanger = function (el, ui) {
             console.log(ui);
             $(ui.helper[0]).css('cursor', '-webkit-grabbing');
         };
         $scope.dropCallback = function (ev, ui) {
+            //fila y columna del destino
             var i = +ev.target.attributes.fila.value;
             var j = +ev.target.attributes.columna.value;
+            //el ng-model me dice si es la meta o un agente
             var objeto = ui.draggable[0].attributes['ng-model'].value;
-            console.log(objeto);
+            var text = (objeto === "meta"? "la meta" : "el agente");
+            //primero trato si es valido
             if ($scope.mapa.isParedOPozo(i, j)) {
                 Notifier.notify({
                     title: 'Accion no valida!',
                     type: 'info',
-                    text: 'No puede posicionarse la meta sobre una pared o un pozo.'
+                    text: 'No puede posicionarse ' + text + ' sobre una pared o un pozo.'
                 });
             } else {
+                //muevo la meta o el agente a la columna i,j deseada.
                 if (objeto === 'meta') {
                     $scope.entorno.mapa.posicionMeta = new Posicion(i, j);
                 } else if (objeto === 'agente') {
@@ -385,12 +407,12 @@
                     epsilon: 0.2,
                     tau: 20
                 },
-                label: 'Greedy E=0.2',
+                label: 'Greedy ε = 0.2',
                 actualizarLabel: function() {
 
                     this.label = this.nombre + " ";
                     if (this.nombre === 'greedy') {
-                        this.label += "ε =" + this.parametros.epsilon;
+                        this.label += "εᵢ =" + this.parametros.epsilon;
                     } else if (this.nombre == 'softmax') {
                         this.label += "τ =" + this.parametros.tau;
                     }
