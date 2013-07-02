@@ -646,7 +646,7 @@
                 },
                 yAxis: {
                     title: {
-                        text: 'Porcentaje (°%)'
+                        text: 'Porcentaje Aprendido (°%)'
                     },
                     labels: {
                         formatter: function() {
