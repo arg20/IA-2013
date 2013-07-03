@@ -6,13 +6,13 @@
     <script type="text/javascript" src="js/jquery-1.9.1.js"></script>
     <script type="text/javascript" src="js/jquery-ui.min.js"></script>
     <script type="text/javascript" src="js/angular.min.1.1.5.js"></script>
-    <script type="text/javascript" src="js/angular.min.1.1.5.js"></script>
     <script type="text/javascript" src="js/angular-dragdrop.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/localStorageModule.js"></script>
     <script type="text/javascript" src="js/spritely.js"></script>
     <script type="text/javascript" src="js/rotate.js"></script>
     <script type="text/javascript" src="js/game.js"></script>
+    <script type="text/javascript" src="js/jquery.qrcode.min.js"></script>
     <script type="text/javascript" src="js/ui-bootstrap-custom-tpls-0.3.0.min.js"></script>
     <script type="text/javascript">
         var app = angular.module('IA2013', ['LocalStorageModule', 'ngDragDrop', 'ui.bootstrap']);
@@ -374,7 +374,7 @@
                         <div class="controls" style="color: white;">
                             <div class="input-prepend">
                                 <span class="add-on" style="color: black;" >τ</span>
-                                <input style="margin: 0px; width: 50px;" id="grdy" type="text" placeholder="Tau" ng-model="entrenamiento.politicaSeleccionada.tau" ng-change="grafico.estrategia.actualizarLabel()" class="ng-pristine ng-valid">
+                                <input style="margin: 0px; width: 50px;" id="tau" type="text" placeholder="Tau" ng-model="entrenamiento.politicaSeleccionada.tau" ng-change="grafico.estrategia.actualizarLabel()" class="ng-pristine ng-valid">
                             </div>
                         </div>
                     </div>
@@ -389,10 +389,11 @@
             <img src="img/agente-min.png" class="img-rounded" style="height: 198px;" alt="agente-meme" ng-hide="entrenamiento.completado" />
             <span ng-show="entrenamiento.completado">
 
-                <chart id="chartie" value="graficoResultadoEntrenamiento"></chart>
+                <chart id="chartie" value="graficoResultadoEntrenamiento" recreate="true" ></chart>
             </span>
         </front>
         <back>
+            <div id="qrcode"></div>
         </back>
     </widget>
 
@@ -410,7 +411,7 @@
                      </span>
                 </li>
                 <li class="smaller"><a id="qoptimo" class="btn btn-mini btn-primary" ng-click="establecerConocimientoActualComoPoliticaOptima()" >Q es óptimo</a></li>
-                <li class="smaller">Matriz Q</li>
+                <li class="smaller"><a class="btn btn-mini" ng-click="test()">Stringify</a></li>
                 <li class="bottom" style="padding-top: 1px;" >
                     <div style="float:left; margin-right: 10px;">
                         <div style="float: none; margin-left: 0px;">Explorador de la matriz Q</div>
@@ -420,19 +421,19 @@
                         </div></div>
                     <div style="float: right;">
                         <div style="float:none; ">
-                            <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[7]" />
-                            <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[0]" />
-                            <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[1]" />
+                            <input type="text"  style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[7]" />
+                            <input type="text" name="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[0]" />
+                            <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[1]" />
                         </div>
                         <div style="float:none; margin-top: 3px; margin-bottom: 3px;" >
-                            <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[6]" />
+                            <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[6]" />
                             <span style="width: 35px;">{{consulta.fila || consulta.fila === 0? consulta.fila: 'I'}} x {{consulta.columna || consulta.columna === 0? consulta.columna: 'J'}}</span>
-                            <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[2]" />
+                            <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[2]" />
                         </div>
                         <div style="float:none; ">
-                            <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[5]" />
-                            <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[4]" />
-                            <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[3]" />
+                            <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[5]" />
+                            <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[4]" />
+                            <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[3]" />
                         </div>
                     </div>
                 </li>
@@ -588,19 +589,19 @@
                     <p  >Pincel:&nbsp;{{mensajes.editor.pincelSeleccionado()}}.</p>
                     <div style="float: left;">
                         <div style="float:none; ">
-                            <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[7]" />
-                            <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[0]" />
-                            <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[1]" />
+                            <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[7]" />
+                            <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[0]" />
+                            <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[1]" />
                         </div>
                         <div style="float:none; margin-top: 3px; margin-bottom: 3px;" >
-                            <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[6]" />
+                            <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[6]" />
                             <span style="width: 35px;">&nbsp;{{mensajes.editor.posicionHovered()}}</span>
-                            <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[2]" />
+                            <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[2]" />
                         </div>
                         <div style="float:none; ">
-                            <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[5]" />
-                            <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[4]" />
-                            <input type="text" name="a7" id="a7" style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[3]" />
+                            <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[5]" />
+                            <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[4]" />
+                            <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[3]" />
                         </div>
                 </div>
                     </div>
@@ -819,6 +820,7 @@
             window.location.href = "doc/Paper.IA.G7.pdf";
         });
     });
+
 </script>
 
 </body>

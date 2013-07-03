@@ -2,12 +2,23 @@
 
 function Entorno(filas, columnas, paredes, pozos) {
     var self = this;
-    this.filas = filas;
-    this.columnas = columnas;
-    this.mapa = new Mapa(filas, columnas, paredes, pozos);
-    this.agente = {};
-    this.recompensaMeta = 90;
-    this.recompensa = 0;
+    if (arguments.length == 1) {
+        var size = Math.sqrt(filas.length - 1);
+        this.filas = size;
+        this.columnas = size;
+        this.mapa = new Mapa(filas);
+        this.agente = {};
+        this.recompensaMeta = 90;
+        this.recompensa = 0;
+    } else {
+        this.filas = filas;
+        this.columnas = columnas;
+        this.mapa = new Mapa(filas, columnas, paredes, pozos);
+        this.agente = {};
+        this.recompensaMeta = 90;
+        this.recompensa = 0;
+    }
+
 
     this.moverAgenteAleatoriamente = function () {
         self.mapa.posicionAgente = self.mapa.getPosicionAleatoriaSinPozos();
@@ -76,7 +87,9 @@ function Entorno(filas, columnas, paredes, pozos) {
 
     this.moverAgenteAleatoriamente();
 
-    this.moverMetaAleatoriamente();
+    if (arguments.length > 1) {
+        this.moverMetaAleatoriamente();
+    }
 
     this.resetearEstado = function () {
         do {
@@ -96,21 +109,33 @@ function Entorno(filas, columnas, paredes, pozos) {
 }
 
 function Mapa(filas, columnas, numParedes, numPozos) {
+
     var self = this;
+    //tipo camino
+    if (arguments.length == 1) {
+        var serialized = filas;
+        var size = Math.sqrt(serialized.length - 1);
+        this.filas = size;
+        this.columnas = size;
+        this.cantidadDeParedes = (serialized.match(/1/g)||[]).length;
+        this.cantidadDePozos = (serialized.match(/0/g)||[]).length;
+        this.mapa = createArray(this.filas, this.columnas);
+    } else {
+
     this.filas = filas;
     this.columnas = columnas;
     this.cantidadDeParedes = numParedes;
     this.cantidadDePozos = numPozos;
     this.mapa = createArray(filas, columnas);
-
+    }
 
 
 
     this.getPosicionAleatoria = function () {
         var nx, ny;
         do {
-            nx = getRandomInt(0, filas - 1);
-            ny = getRandomInt(0, columnas - 1);
+            nx = getRandomInt(0, self.filas - 1);
+            ny = getRandomInt(0, self.columnas - 1);
             //hago esto porque puede ser que me de un par (i,j) en donde haya una pared, entonces es una posicion valida pero no legal.
         } while (!self.isLegal(nx, ny));
         return new Posicion(nx, ny);
@@ -120,8 +145,8 @@ function Mapa(filas, columnas, numParedes, numPozos) {
     this.getPosicionAleatoriaSinPozos = function () {
         var nx, ny;
         do {
-            nx = getRandomInt(0, filas - 1);
-            ny = getRandomInt(0, columnas -1);
+            nx = getRandomInt(0, self.filas - 1);
+            ny = getRandomInt(0, self.columnas -1);
             //hago esto porque puede ser que me de un par (i,j) en donde haya una pared, entonces es una posicion valida pero no legal.
         } while (self.isParedOPozo(nx, ny));
         return new Posicion(nx, ny);
@@ -182,8 +207,8 @@ function Mapa(filas, columnas, numParedes, numPozos) {
             }
         }
 
-        for (i = 0; i < filas; i++) {
-            for (j = 0; j < columnas; j++) {
+        for (i = 0; i < self.filas; i++) {
+            for (j = 0; j < self.columnas; j++) {
                 //si no es una pared o un pozo, tomamos aleatoriamente algun tipo de camino (malo, excelente, etc) y lo asignamos al lugar
                 if (!self.isParedOPozo(i, j)) {
                     self.setTipoCamino(TipoCamino.getRandomSinParedNiPozo(), i, j);
@@ -206,7 +231,7 @@ function Mapa(filas, columnas, numParedes, numPozos) {
         //recursividad para ver si se puede pasar por las posiciones libres
         var encontrado = false;
         search:
-            for (i = 0; i < filas; i++) {
+            for (i = 0; i < this.filas; i++) {
                 for (j = 0; j < columnas; j++) {
                     if (!matrizDePozosYParedes[i][j]) {
                         // esta posicion no tiene pozos ni paredes, hay que ver los vecinos para saber si es transitable
@@ -250,7 +275,7 @@ function Mapa(filas, columnas, numParedes, numPozos) {
     };
 
     this.isValido = function (i, j) {
-        return ((i >= 0) && (i < filas) && (j >= 0) && (j < columnas));
+        return ((i >= 0) && (i < this.filas) && (j >= 0) && (j < this.columnas));
     };
 
     this.isLegal = function (i, j) {
@@ -347,14 +372,14 @@ function Mapa(filas, columnas, numParedes, numPozos) {
 
         var pos, separadorFila;
         var resultado = "";
-        for (var a = 0; a < columnas; a++) {
+        for (var a = 0; a < this.columnas; a++) {
             separadorFila = " ------------";
         }
-        for (var i = 0; i < filas; i++) {
+        for (var i = 0; i < this.filas; i++) {
             resultado += separadorFila;
             resultado += "\n|";
             var etiqueta;
-            for (var j = 0; j < columnas; j++) {
+            for (var j = 0; j < this.columnas; j++) {
                 pos = new Posicion(i, j);
                 if (self.posicionMeta !== null && self.posicionMeta.equals(pos)) {
                     var meta = "META";
@@ -378,7 +403,22 @@ function Mapa(filas, columnas, numParedes, numPozos) {
         return resultado;
     };
 
-    this.crearMapaAleatoriamente();
+    if (arguments.length > 1) {
+        this.crearMapaAleatoriamente();
+    } else {
+        var ventana = 0;
+        for (var fil = 0; fil < this.filas; fil++) {
+            for (var col = 0; col < this.columnas; col++) {
+                var tipo = TipoCamino.getTipoFromValor(serialized[ventana]);
+                self.setTipoCamino(tipo,fil, col);
+                ventana++;
+                if (serialized[ventana] === 'm') {
+                    self.posicionMeta = new Posicion(fil, col);
+                    ventana++;
+                }
+            }
+        }
+    }
 
     this.getAccionesValidas = function(i,j) {
         var acciones = [];
@@ -390,6 +430,20 @@ function Mapa(filas, columnas, numParedes, numPozos) {
             }
         }
         return acciones;
+    }
+
+    this.stringify = function() {
+        var mapString = "";
+        for (var i = 0; i < this.filas; i++) {
+            for (var j = 0; j < this.columnas; j++) {
+                mapString += self.getTipoCamino(i,j).valor;
+                var p = new Posicion(i,j);
+                if (self.posicionMeta.equals(p)) {
+                    mapString += 'm';
+                }
+            }
+        }
+        return mapString;
     }
 
 }
@@ -408,6 +462,13 @@ var TipoCamino = {
     },
     getTipoFromNombre: function(nombre) {
         return TipoCamino[nombre.toUpperCase()];
+    },
+    getTipoFromValor: function(valor) {
+        for (props in TipoCamino) {
+            if (TipoCamino[props].valor == valor) {
+                return TipoCamino[props];
+            }
+        }
     }
 };
 

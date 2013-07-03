@@ -230,7 +230,8 @@
               i: $scope.mapa.filas - 1,
               j: $scope.mapa.columnas -1
             };
-
+            var url = "www.ia2013.co.nf/index.html?m=" + $scope.mapa.stringify();
+            jQuery('#qrcode').qrcode({width: 180,height: 180,text: url});
             Notifier.notify({
                 title: 'Creaci\xf3n, exitosa',
                 type: 'info',
@@ -677,4 +678,47 @@
                 resetZoom:'Resetear Zoom'
             }
         });
+
+        $scope.test = function() {
+            console.log($scope.mapa.stringify());
+        }
+
+        if (window.location.href.indexOf('=') > 0) {
+            $scope.mapaString = window.location.href.substr(window.location.href.indexOf('=') + 1);
+            //
+            $scope.entorno = null;
+            $scope.agente = null;
+            $scope.entrenamiento.resetearEntrenamiento();
+            var config = $scope.configuracionEntorno;
+            $scope.entorno = new Entorno($scope.mapaString);
+            $scope.entorno.moverAgenteAleatoriamente();
+            $scope.entorno.recompensaMeta = $scope.configuracionEntorno.recompensaMeta;
+            $scope.mapa = $scope.entorno.mapa;
+            console.log($scope.entorno.mapa.toString());
+            $scope.crearAgente();
+            switch ($scope.entorno.mapa.filas) {
+                case 6:
+                    $scope.entrenamiento.repeticiones = 2000;
+                    break;
+                case 7:
+                    $scope.entrenamiento.repeticiones = 5000;
+                    break;
+                case 8:
+                    $scope.entrenamiento.repeticiones = 10000;
+                    break;
+                default:
+                    $scope.entrenamiento.repeticiones = 12000;
+            }
+            $scope.entorno.partidasJugadas = 0;
+            $scope.posicionInicial = $scope.entorno.mapa.posicionAgente;
+            $scope.mapa.indices = {
+                i: $scope.mapa.filas - 1,
+                j: $scope.mapa.columnas -1
+            };
+            var url = "www.ia2013.co.nf/index.html?m=" + $scope.mapa.stringify();
+            jQuery('#qrcode').qrcode({
+                width: 180,
+                height: 180,
+                text: url});
+        }
     }]);
