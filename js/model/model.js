@@ -859,7 +859,9 @@ function Partida(entorno) {
     this.estado = entorno.getEstado();
     var resultado = {
         acciones: [],
-        caminosRecorridos: {}
+        caminosRecorridos: {},
+        recompensas: [],
+        recompensaTotal: 0
     };
 
     this.correrPartida = function(callbacks) {
@@ -876,20 +878,24 @@ function Partida(entorno) {
             callbacks.prePartida();
         }
         while ( !entorno.isEstadoFinal() && (!flagVueltasEnCiculos || movimientos > 0 )) {
+            //Pregunto al conocimiento del agente cual es la mejor accion posible en el estado
             var accion = entorno.agente.conocimiento.getMejorAccionPosible(self.estado);
+            //si no es valida (en el caso de que el agente no conozca bien el mapa, elijo alguna valida aleatoriamente
             if (!entorno.isAccionValida(accion)) {
                 var accionesValidas = entorno.mapa.getAccionesValidas(self.estado[0], self.estado[1]);
                 accion = accionesValidas[getRandomInt(0,(accionesValidas.length -1))];
             }
+            //resguardo la accion en la lista de acciones tomadas
             resultado.acciones.push(accion);
-            if ( typeof callbacks.preAccion === "function") {
+            /* Callback preaccion */                            if ( typeof callbacks.preAccion === "function") {
                 callbacks.preAccion();
             }
+            //ejecuto la accion contra el entorno, me devuelve el estado al que pase
             self.estado = entorno.ejecutarAccion(accion);
-            if ( typeof callbacks.postAccion === "function") {
+            /* Callback postaccion */                           if ( typeof callbacks.postAccion === "function") {
                 callbacks.postAccion();
             }
-
+            resultado.recompensas.push(entorno.recompensa);
             /*
             Comprobamos si se quedo en un bucle por ejemplo si no tuvo un buen aprendizaje.
             Vamos guardando los nombres de los estados cada vez que pasamos por ellos en un arreglo.
@@ -902,10 +908,14 @@ function Partida(entorno) {
             }
             movimientos--;
             casillerosRecorridos.push(nombreEstado);
+            // Fin de la comprobacion
 
             tipoCamino = entorno.mapa.getTipoCamino(entorno.mapa.posicionAgente);
-            resultado.caminosRecorridos[tipoCamino]? resultado.caminosRecorridos[tipoCamino]++ : resultado.caminosRecorridos[tipoCamino] = 1;
+            resultado.caminosRecorridos[tipoCamino.nombre]? resultado.caminosRecorridos[tipoCamino.nombre]++ : resultado.caminosRecorridos[tipoCamino.nombre] = 1;
         }
+        resultado.recompensas.forEach(function(recompensa) {
+           resultado.recompensaTotal += recompensa;
+        });
         return resultado;
     }
 

@@ -4,6 +4,10 @@
         '$timeout',
         'localStorageService',
     function($scope, Notifier, $timeout, localStorageService) {
+
+        /*
+        Inicializacion de las propiedades
+         */
         window.appCtrl = angular.element('[ng-controller=AppCtrl]').scope();
         $scope.mapa = { filas: 6 };
         $scope.mensajes = {
@@ -96,21 +100,21 @@
                 }
                 this.muertesDelAgente = 0;
                 this.triunfosDelAgente = 0;
-                $scope.agente.conocimiento.alpha = +this.qlearning.alfa;
-                $scope.agente.conocimiento.gamma = +this.qlearning.gamma;
-                $scope.agente.conocimiento.qInicial = +this.qlearning.qInicial;
-                if($scope.agente.politica.nombre === "ε-Greedy") {
-                    $scope.agente.politica.epsilon = parseFloat($scope.entrenamiento.politicaSeleccionada.epsilon);
-                    $scope.agente.politica.epsilonFinal = parseFloat($scope.entrenamiento.politicaSeleccionada.epsilonFinal);
-                    $scope.agente.politica.step = parseFloat($scope.entrenamiento.politicaSeleccionada.step);
-                    $scope.agente.politica.iteraciones = $scope.entrenamiento.repeticiones;
-                    $scope.agente.politica.calcularIncremento();
+                $scope.entorno.agente.conocimiento.alpha = +this.qlearning.alfa;
+                $scope.entorno.agente.conocimiento.gamma = +this.qlearning.gamma;
+                $scope.entorno.agente.conocimiento.qInicial = +this.qlearning.qInicial;
+                if($scope.entorno.agente.politica.nombre === "ε-Greedy") {
+                    $scope.entorno.agente.politica.epsilon = parseFloat($scope.entrenamiento.politicaSeleccionada.epsilon);
+                    $scope.entorno.agente.politica.epsilonFinal = parseFloat($scope.entrenamiento.politicaSeleccionada.epsilonFinal);
+                    $scope.entorno.agente.politica.step = parseFloat($scope.entrenamiento.politicaSeleccionada.step);
+                    $scope.entorno.agente.politica.iteraciones = $scope.entrenamiento.repeticiones;
+                    $scope.entorno.agente.politica.calcularIncremento();
                     console.log("Entrenando agente con: " +
                         "\n Politica: ε-greedy " +
-                        "\n Epsilon inicial: " + $scope.agente.politica.epsilon +
-                        "\n Epsilon final: " + $scope.agente.politica.epsilonFinal +
-                        "\n Variando el epsilon cada " + $scope.agente.politica.step + " iteraciones" +
-                        "\n Con una variación de: " + $scope.agente.politica.variacionEpsilon);
+                        "\n Epsilon inicial: " + $scope.entorno.agente.politica.epsilon +
+                        "\n Epsilon final: " + $scope.entorno.agente.politica.epsilonFinal +
+                        "\n Variando el epsilon cada " + $scope.entorno.agente.politica.step + " iteraciones" +
+                        "\n Con una variación de: " + $scope.entorno.agente.politica.variacionEpsilon);
                 }
                 if ( typeof callbacks.preEntrenamiento === "function") {
                     callbacks.preEntrenamiento();
@@ -123,13 +127,13 @@
                             if ( typeof callbacks.preRepeticion === "function") {
                                 callbacks.preRepeticion($scope.entrenamiento.repeticionActual);
                             }
-                            $scope.agente.hacerRepeticion($scope.entrenamiento.repeticionActual);
+                            $scope.entorno.agente.hacerRepeticion($scope.entrenamiento.repeticionActual);
                             if ( typeof callbacks.postRepeticion === "function") {
                                 callbacks.postRepeticion($scope.entrenamiento.repeticionActual);
                             }
-                            if ($scope.agente.entorno.isMuerto()) {
+                            if ($scope.entorno.agente.entorno.isMuerto()) {
                                 $scope.entrenamiento.muertesDelAgente++;
-                            } else if ($scope.agente.entorno.isVictorioso()) {
+                            } else if ($scope.entorno.agente.entorno.isVictorioso()) {
                                 $scope.entrenamiento.triunfosDelAgente++;
                             }
                         }
@@ -156,11 +160,11 @@
                             ]
                         ];
                         $scope.entrenamiento.completado = true;
-                        $scope.agente.entrenado = true;
+                        $scope.entorno.agente.entrenado = true;
                         console.log('Entrenamiento finalizado');
                         $scope.entorno.resetearEstado();
-                        console.log('Exploracion' + $scope.agente.politica.accionesExploracion);
-                        console.log('Explotacion' + $scope.agente.politica.accionesExplotacion);
+                        console.log('Exploracion' + $scope.entorno.agente.politica.accionesExploracion);
+                        console.log('Explotacion' + $scope.entorno.agente.politica.accionesExplotacion);
                         $scope.crearGraficoResultadoEntrenamiento();
                         $scope.posicionInicial = new Posicion($scope.entorno.mapa.posicionAgente.i, $scope.entorno.mapa.posicionAgente.j);
                     }
@@ -173,18 +177,45 @@
                 this.repeticionActual = 0;
             },
             entrenar: function () {
-                $scope.agente.conocimiento.alpha = +$scope.qlearning.alfa;
-                $scope.agente.conocimiento.gamma = +$scope.qlearning.gamma;
-                $scope.agente.conocimiento.qInicial = +$scope.qlearning.qInicial;
+                $scope.entorno.agente.conocimiento.alpha = +$scope.qlearning.alfa;
+                $scope.entorno.agente.conocimiento.gamma = +$scope.qlearning.gamma;
+                $scope.entorno.agente.conocimiento.qInicial = +$scope.qlearning.qInicial;
                 $scope.coach.entrenar();
                 Notifier.notify({
                     title: 'Entrenamiento finalizado',
                     type: 'info',
                     text: 'El agente fue entrenado durante ' + $scope.coach.repeticiones + ' ciclos.'
                 });
+            },
+            iniciarEntrenamiento: function() {
+                if ($scope.resguardarQ) {
+                    this.entrenarTimeout($scope.callbackParaResguardarQ);
+                    $scope.matrizQResguardada = true;
+                } else {
+                  this.entrenarTimeout();
+                    $scope.matrizQResguardada = false;
+                }
             }
         };
+        $scope.callbackParaResguardarQ = {
+            preEntrenamiento: function() {
+               $scope.matricesQ = [];
+            },
+            preRepeticion: function(rep) {
+                $scope.matricesQ.push($scope.agente.conocimiento.qValuesTable.clone());
+            }
+
+        }
+        $scope.resguardarQ = false;
+        $scope.toggleResguardo = function() {
+            $scope.resguardarQ = !$scope.resguardarQ;
+        }
+
+
         $scope.MatrizQOptima = null;
+        //tamaño de grilla
+        $scope.mapaUIClass = "span9";
+        $scope.resultadoUIClass = "span3";
 
 
 
@@ -194,6 +225,11 @@
             $scope.configuracionEntorno.filas = +nuevoTamano;
             $scope.configuracionEntorno.columnas = +nuevoTamano;
         };
+
+        /*
+        Creacion de entornos y agentes
+         */
+
         $scope.crearAgente = function () {
             $scope.entorno.agente = $scope.agente = new Agente($scope.entorno);
             $scope.entrenamiento.seleccionarPolitica($scope.agente, {
@@ -203,7 +239,6 @@
         };
         $scope.crearEntorno = function () {
             $scope.entorno = null;
-            $scope.agente = null;
             $scope.entrenamiento.resetearEntrenamiento();
             var config = $scope.configuracionEntorno;
             $scope.entorno = new Entorno(config.filas, config.columnas, config.paredes, config.pozos);
@@ -232,10 +267,29 @@
             };
             var url = "www.ia2013.co.nf/index.html?m=" + $scope.mapa.stringify();
             jQuery('#qrcode').qrcode({width: 180,height: 180,text: url});
+            $scope.mapaUrl = url;
+            switch($scope.entorno.mapa.columnas){
+                case 6:
+                    $scope.mapaUIClass = "span6";
+                    $scope.resultadoUIClass = "span6";
+                    break;
+                case 8:
+                    $scope.mapaUIClass = "span7";
+                    $scope.resultadoUIClass = "span5";
+                    break;
+                case 10:
+                    $scope.mapaUIClass = "span9";
+                    $scope.resultadoUIClass = "span3";
+                    break;
+                default:
+                    $scope.mapaUIClass = "span8";
+                    $scope.resultadoUIClass = "span4";
+                    break;
+            }
             Notifier.notify({
-                title: 'Creaci\xf3n, exitosa',
+                title: 'Creaci\xf3n exitosa',
                 type: 'info',
-                text: 'El entorno, con un mapa de' + config.filas + 'x' + config.columnas + ', ha sido creado con \xe9xito.'
+                text: 'El entorno, con un mapa de ' + config.filas + 'x' + config.columnas + ', ha sido creado con \xe9xito.'
             });
         };
         $scope.isEntornoCreado = function () {
@@ -251,16 +305,21 @@
                 text: 'Se ha reseteado la aplicaci\xf3n.'
             });
         };
+
+        /*
+        Getter de politica y manejo del conocimiento
+         */
+
         $scope.getPoliticaAgente = function () {
             if ($scope.isEntornoCreado()) {
-                return $scope.agente.politica.nombre;
+                return $scope.entorno.agente.politica.nombre;
             } else {
                 return 'Ninguna';
             }
         };
         $scope.amnesia = function () {
-            $scope.agente.conocimiento.sufrirAmnesia();
-            $scope.agente.entrenado = false;
+            $scope.entorno.agente.conocimiento.sufrirAmnesia();
+            $scope.entorno.agente.entrenado = false;
             $scope.entrenamiento.repeticionActual = 0;
             Notifier.notify({
                 title: 'El agente se ha golpeado!',
@@ -268,50 +327,6 @@
                 text: 'El agente ha sufrido amnesia y ha olvidado todos sus conocimientos'
             });
         };
-        $scope.isMeta = function (i, j) {
-            return $scope.entorno.mapa.posicionMeta.equals(new Posicion(i, j));
-        };
-        $scope.isPosicionInicial = function (i, j) {
-            return $scope.posicionInicial.equals(new Posicion(i, j));
-        };
-        $scope.editor = {
-            pincelSeleccionado: 'Bueno',
-            seleccionarPincel: function (nombre) {
-                this.pincelSeleccionado = nombre;
-            },
-            pintar: function (i, j) {
-                var tipo = $scope.mapa.getTipoCamino(i, j);
-                $scope.mapa.setTipoCamino(TipoCamino.getTipoFromNombre(this.pincelSeleccionado), i, j);
-                if (!$scope.mapa.isMapaValido()) {
-                    $scope.mapa.setTipoCamino(tipo, i, j);
-                    Notifier.notify({
-                        title: 'Accion no valida!',
-                        type: 'info',
-                        text: 'Al poner el obstaculo alli el mapa dejara de ser valido, no se permite esta accion.'
-                    });
-                }
-            }
-        };
-        $scope.moverAgenteAleatoriamente = function () {
-            $scope.entorno.resetearEstado();
-            $scope.posicionInicial = new Posicion($scope.entorno.mapa.posicionAgente);
-        };
-
-        $scope.jugar = function () {
-            $scope.entorno.partidasJugadas++;
-            $scope.corrida = new Partida($scope.entorno);
-            var resultado = $scope.corrida.correrPartida();
-            $scope.agente.agenteView.doAccion(resultado.acciones, function () {
-                $scope.$apply(function () {
-                    $scope.posicionInicial = new Posicion($scope.entorno.mapa.posicionAgente.i, $scope.entorno.mapa.posicionAgente.j);
-                });
-            });
-        };
-
-        $scope.agenteOpciones = {
-            onStart: 'cursorChanger'
-        }
-
         $scope.consulta = {
             fila: 0,
             columna: 0,
@@ -329,7 +344,7 @@
         };
         $scope.consulta.consultarQ = function (i, j, a) {
             if ($.isNumeric(i) && $.isNumeric(j) && $.isNumeric(a)) {
-                return $scope.agente.conocimiento.Q([
+                return $scope.entorno.agente.conocimiento.Q([
                     i,
                     j
                 ], a);
@@ -338,12 +353,22 @@
         };
         $scope.consulta.consultarQs = function (i, j) {
             if ($.isNumeric(i) && $.isNumeric(j)) {
-                $scope.consulta.resultado = $scope.agente.conocimiento.getValoresDeQEnEstado([
+                $scope.consulta.resultado = $scope.entorno.agente.conocimiento.getValoresDeQEnEstado([
                     i,
                     j
                 ]);
             }
             return 'Ingrese todos los valores';
+        };
+        $scope.matricesQ = [];
+        $scope.matricesQIndex = 0;
+
+        /*
+         Consultas al mapa y edicion
+
+         */
+        $scope.isMeta = function (i, j) {
+            return $scope.entorno.mapa.posicionMeta.equals(new Posicion(i, j));
         };
         $scope.moverMeta = function (i, j) {
             if ($scope.entorno.mapa.isParedOPozo(i, j)) {
@@ -352,15 +377,67 @@
             $scope.entorno.mapa.posicionMeta = new Posicion(i, j);
             return true;
         };
+        $scope.isPosicionInicial = function (i, j) {
+            return $scope.posicionInicial.equals(new Posicion(i, j));
+        };
+        $scope.editor = {
+            pincelSeleccionado: 'Bueno',
+            seleccionarPincel: function (nombre) {
+                this.pincelSeleccionado = nombre;
+            },
+            pintar: function (i, j) {
+                var tipo = $scope.mapa.getTipoCamino(i, j);
+                $scope.mapa.setTipoCamino(TipoCamino.getTipoFromNombre(this.pincelSeleccionado), i, j);
+                if (!$scope.mapa.isMapaValido()) {
+                    $scope.mapa.setTipoCamino(tipo, i, j);
+                    Notifier.notify({
+                        title: 'Accion no valida!',
+                        type: 'info',
+                        text: 'Al poner el obstaculo allí, el mapa dejará de ser válido. Esta acción no está permitida.'
+                    });
+                }
+            }
+        };
+        $scope.moverAgenteAleatoriamente = function () {
+            $scope.entorno.resetearEstado();
+            $scope.posicionInicial = new Posicion($scope.entorno.mapa.posicionAgente);
+        };
+
+
+        /*
+        Para una partida
+         */
+        $scope.jugar = function () {
+            $scope.entorno.partidasJugadas++;
+            $scope.corrida = new Partida($scope.entorno);
+            var resultado = $scope.corrida.correrPartida();
+            $scope.entorno.agente.agenteView.doAccion(resultado.acciones, function () {
+                $scope.$apply(function () {
+                    $scope.posicionInicial = new Posicion($scope.entorno.mapa.posicionAgente.i, $scope.entorno.mapa.posicionAgente.j);
+                });
+            });
+            console.log("Recompensa obtenida de la partida: " + resultado.recompensaTotal);
+            console.log("Lista de recompensas: " + resultado.recompensas);
+            console.log("Caminos recorridos: " + resultado.caminosRecorridos);
+            $scope.ultimaPartida = resultado;
+        };
+
+        /*
+        Necesario para UI
+         */
+        $scope.agenteOpciones = {
+            onStart: 'cursorChanger'
+        }
         $scope.opcionesCasillero = {
             onDrop: 'dropCallback',
             tolerance: 'intersect'
         };
-
         $scope.agenteOpcionesJqueryUI = {
             revert: 'invalid',
             revertDuration: 150
         }
+
+
         /*
         Funcion que cambia el cursor en chrome cuando se arrastra la meta o el agente
          */
@@ -389,6 +466,7 @@
                 } else if (objeto === 'agente') {
                     $scope.entorno.mapa.posicionAgente = new Posicion(i, j);
                     $scope.posicionInicial = $scope.entorno.mapa.posicionAgente = new Posicion(i, j);
+                    $scope.ultimaPartida = {};
                 }
             }
         };
@@ -396,6 +474,10 @@
          Generacion de graficos, experimental
          */
 
+        /*
+        Métodos relacionados con la creación del gráfico comparativo.
+
+         */
         $scope.grafico = {
             datos: [],
 
@@ -436,7 +518,7 @@
             },
             prepararDatos: function() {
                 if (typeof($scope.matrizQOptima) == "undefined") {
-                    if ($scope.agente.entrenado) {
+                    if ($scope.entorno.agente.entrenado) {
                         $scope.tomarPoliticaOptimaModal.show();
                     } else {
                         Notifier.notify({
@@ -446,6 +528,7 @@
                         });
                     }
                 } else {
+                    $scope.grafico.tiempos = [];
                     if ($scope.grafico.estrategiasAComparar.length == 0) {
                         Notifier.notify({
                            title: 'No se añadieron estregias',
@@ -469,15 +552,15 @@
         $scope.intervalo = 10;
 
         $scope.establecerConocimientoActualComoPoliticaOptima = function () {
-            $scope.matrizQOptima = $scope.agente.conocimiento.qValuesTable.clone();
+            $scope.matrizQOptima = $scope.entorno.agente.conocimiento.qValuesTable.clone();
         }
 
         $scope.callbacksParaEntrenamiento = {
             preEntrenamiento: function() {
                 var i, j, a;
-                $scope.agente.conocimiento.sufrirAmnesia();
+                $scope.entorno.agente.conocimiento.sufrirAmnesia();
                 $scope.grafico.datosTemp = [];
-                var matrizQActual = $scope.agente.conocimiento.qValuesTable;
+                var matrizQActual = $scope.entorno.agente.conocimiento.qValuesTable;
                 var matrizQOptima = $scope.matrizQOptima;
                 var filas = matrizQOptima.length;
                 var columnas = matrizQOptima[0].length;
@@ -506,7 +589,7 @@
             preRepeticion: function(numeroIteracion) {
                 if (numeroIteracion % $scope.intervalo == 0 || numeroIteracion === 1) {
                     var i, j, a, diferencia, porcentajeFaltante, cantidadDePosiciones, porcentajeAprendido;
-                    var matrizQActual = $scope.agente.conocimiento.qValuesTable;
+                    var matrizQActual = $scope.entorno.agente.conocimiento.qValuesTable;
                     var matrizQOptima = $scope.matrizQOptima;
                     var filas = matrizQOptima.length;
                     var columnas = matrizQOptima[0].length;
@@ -679,9 +762,7 @@
             }
         });
 
-        $scope.test = function() {
-            console.log($scope.mapa.stringify());
-        }
+
 
         if (window.location.href.indexOf('=') > 0) {
             $scope.mapaString = window.location.href.substr(window.location.href.indexOf('=') + 1);

@@ -114,7 +114,7 @@
                 </div>
             </li>
             <li>
-                <span>Partidas</span>&nbsp;jugadas
+                <span>Simulaciones</span>&nbsp;corridas
                 <div>
                     <span>{{entorno.partidasJugadas? entorno.partidasJugadas : 0}}</span>
                     <img ng-src="img/{{(entorno.partidasJugadas > 0) && 'circulo-verde' || 'circulo-rojo' }}.png"
@@ -122,11 +122,11 @@
                 </div>
             </li>
             <li>
-                <span>Partida</span>
-                &nbsp;guardada
+                <span>Matriz Q</span>
+                &nbsp;muestreada
                 <div>
                     <span>No</span>
-                    <img src="img/circulo-rojo.png" alt="Arrow up">
+                    <img ng-src="img/{{(matrizQResguardad) && 'circulo-verde' || 'circulo-rojo' }}.png"
                 </div>
             </li>
         </ul>
@@ -141,7 +141,7 @@
 
 <widget skin="white" widgetVar="widgetEntorno">
     <front titulo="Panel central">
-        <h2 class="login-title" >Gestor de partida!</h2>
+        <h2 class="login-title" >Gestor de Simulaciones</h2>
         <div class="login-member">
             <p style="margin-top: 0px;">Pódes <a class="flipper" id="editar" >editar</a> el entorno.</p>
         <a class="btn btn-large btn-success" ng-click="crearEntorno()" ng-hide="isEntornoCreado()" ng-animate="{show:'animated bounceIn'}" id="crear-entorno" >Crear Entorno!</a>
@@ -151,7 +151,7 @@
             <div class="opciones" style="text-align: center;">Opciones</div>
             <div class="btn-group"  style="margin-top: 5px;" ng-animate="{show:'animated flipInY', hide:'animated fadeOut'}" ng-show="isEntornoCreado()" >
                 <a class="btn btn-large btn-primary" ng-click="editor.show()" id="inspeccionar"  >Inspección</a>
-                <a id="partida" class="btn btn-large btn-danger" href="" ng-click="partida.show()">Partida</a>
+                <a id="partida" class="btn btn-large btn-danger" href="" ng-click="partida.show()">Simulación</a>
             </div>
         </span>
     </front>
@@ -285,8 +285,8 @@
                 </li>
                 <li >
                     <span><a id="amnesia" class=" btn btn-small btn-primary btn-mini"
-                             ng-click="amnesia()">Amnesia!</a></span>
-                    <span><a id="entrenar" class=" btn btn-small btn-danger btn-mini" ng-click="entrenamiento.entrenarTimeout()">Entrenar!</a></span>
+                             ng-click="amnesia()">Amnesia</a></span>
+                    <span><a id="entrenar" class=" btn btn-small btn-danger btn-mini" ng-click="entrenamiento.iniciarEntrenamiento()">Entrenar</a></span>
                 </li>
                 <li class="processed-pct">
                     Entrenamiento:&nbsp;&nbsp;<span>{{entrenamiento.getPorcentajeEntrenamiento()}}%</span>
@@ -326,11 +326,12 @@
                 <div class="control-group row-fluid">
                     <div class="span12">
                         <div class="controls">
-                            <input type="text" name="" placeholder="Gamma" class="input-mini" tooltip="Factor de descuento" tooltip-placement="bottom" tooltip-trigger="focus"
+                            <input type="text" name="" placeholder="Gamma" class="input-mini" tooltip="Factor de descuento" tooltip-placement="bottom"
                                    style="margin: 0px 3px 0px 0px;" ng-model="entrenamiento.qlearning.gamma"/>
                             <input type="text" name="" placeholder="Q-inicial" class="input-mini"
-                                   style="margin: 0px;" ng-model="entrenamiento.qlearning.qInicial" tooltip="Inicialización optimista" tooltip-placement="bottom" tooltip-trigger="focus"/>
+                                   style="margin: 0px;" ng-model="entrenamiento.qlearning.qInicial" tooltip="Inicialización optimista" tooltip-placement="bottom" />
                             <a ><span ng-click="qlearningModal.show()" tooltip="Ayuda" tooltip-placement="right" ><i class="icon-question-sign icon-white"> </i></span></a>
+                            <button type="button" class="btn btn-inverse btn-mini" data-toggle="button" ng-click="toggleResguardo()" >Muestrear Q</button>
                         </div>
 
                     </div>
@@ -344,17 +345,17 @@
                     <div class="span12">
                         <div class="controls">
                             <div ng-show="grafico.estrategia.nombre === 'greedy'" style="">
-                                <div class="input-prepend">
+                                <div class="input-prepend" tooltip="ε inicial" tooltip-placement="top">
                                     <span class="add-on" style="color: black;" >ε<sub>i</sub> </span>
                                     <input style="margin: 0px; width: 50px;" id="epsilonInicial" type="text" placeholder="Epsilon" ng-model="entrenamiento.politicaSeleccionada.epsilon" ng-change="grafico.estrategia.actualizarLabel()" class="ng-pristine ng-valid">
                                 </div>&nbsp;-&nbsp;
-                                <div class="input-prepend">
+                                <div class="input-prepend" tooltip="ε final" tooltip-placement="top">
                                     <span class="add-on" style="color: black;" >ε<sub>f</sub></span>
                                     <input style="margin: 0px; width: 50px;" id="epsilonFinal" type="text" placeholder="Epsilon" ng-model="entrenamiento.politicaSeleccionada.epsilonFinal" ng-change="grafico.estrategia.actualizarLabel()" class="ng-pristine ng-valid">
                                 </div>
-                                <div class="input-prepend">
-                                    <span class="add-on" style="color: black;" >Δ</span>
-                                    <input style="margin: 0px; width: 50px; padding:2px;" id="step" type="number" placeholder="Epsilon" ng-model="entrenamiento.politicaSeleccionada.step" ng-change="grafico.estrategia.actualizarLabel()" class="ng-pristine ng-valid" tooltip="Step para ε" tooltip-placement="top">
+                                <div class="input-prepend" tooltip="Cada cuantos episodios variar ε" tooltip-placement="top">
+                                    <span class="add-on" style="color: black;" >k</span>
+                                    <input style="margin: 0px; width: 50px; padding:2px;" id="step" type="number" placeholder="Epsilon" ng-model="entrenamiento.politicaSeleccionada.step" ng-change="grafico.estrategia.actualizarLabel()" class="ng-pristine ng-valid" >
                                 </div>
                             </div>
 
@@ -393,7 +394,7 @@
             </span>
         </front>
         <back>
-            <div id="qrcode"></div>
+
         </back>
     </widget>
 
@@ -410,8 +411,8 @@
                          {{entrenamiento.tiempoDeEntrenamiento}}
                      </span>
                 </li>
-                <li class="smaller"><a id="qoptimo" class="btn btn-mini btn-primary" ng-click="establecerConocimientoActualComoPoliticaOptima()" >Q es óptimo</a></li>
-                <li class="smaller"><a class="btn btn-mini" ng-click="test()">Stringify</a></li>
+                <li class="smaller"><a id="qoptimo" class="btn btn-mini btn-primary" ng-click="establecerConocimientoActualComoPoliticaOptima()" tooltip="Resguarda al conocimiento actual como óptimo" tooltip-placement="top" >Q es óptimo</a></li>
+                <li class="smaller"><a class="btn btn-mini" ng-click="enlaceModal.show()">Link a mapa</a></li>
                 <li class="bottom" style="padding-top: 1px;" >
                     <div style="float:left; margin-right: 10px;">
                         <div style="float: none; margin-left: 0px;">Explorador de la matriz Q</div>
@@ -603,8 +604,11 @@
                             <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[4]" />
                             <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[3]" />
                         </div>
-                </div>
                     </div>
+
+                    <input type="range" name="points" min="1" max="1000" style="background-color: #f6f6f6; width: 100%; margin-top: 10px;" ng-model="matricesQIndex">
+                    {{ matricesQIndex }}
+                </div>
             </div>
         </div>
         </form>
@@ -614,10 +618,10 @@
     </bottom>
 </modal>
 
-<modal header="Jugar un partida" widgetvar="partida" >
+<modal header="Correr una simulación" widgetvar="partida" >
     <contenido>
         <div class="row-fluid">
-            <div class="span9">
+            <div ng-class="mapaUIClass">
                 <table class="mapa" style="float: left; margin-right: 10px;">
                     <tr ng-repeat="fila in mapa.mapa track by $index">
                         <td ng-repeat="columna in fila track by $index" ng-class="columna.nombre" fila="{{$parent.$index}}" columna="{{$index}}" jqyoui-droppable="opcionesCasillero" data-drop="true" ng-model="posicion" >
@@ -630,11 +634,20 @@
 
                 </table>
             </div>
+
+
+            <div ng-class="resultadoUIClass">
+                <p>Recompensa total obtenida: <strong>{{ultimaPartida.recompensaTotal?ultimaPartida.recompensaTotal:'Aún no se ha calculado'}}.</strong></p>
+                <p>Estados por los que pasó:</p>
+                <p ng-hide="ultimaPartida.caminosRecorridos">
+                    <strong>Aún no se ha corrido la simulación.</strong>
+                </p>
+                <ul>
+                    <li ng-repeat="(camino,x) in ultimaPartida.caminosRecorridos track by $index">
+                        <strong>{{ camino }}</strong>: <strong>{{ x }}</strong> {{ x === 1?'vez':'veces' }}.
+                    </li>
+                </ul>
         </div>
-        <div class="row-fluid">
-            <div class="span9">
-                {{mensajes.mensajeJuego}}
-            </div>
         </div>
     </contenido>
     <bottom>
@@ -691,6 +704,16 @@
     </contenido>
     <bottom>
         <a class="btn btn-danger" ng-click="qlearningModal.hide()" >Cerrar</a>
+    </bottom>
+</modal>
+
+<modal header="Enlaces al mapa" widgetvar="enlaceModal" >
+    <contenido>
+        <div id="qrcode"></div>
+        <p>Dirección del mapa: <a href="{{mapaUrl}}"></a>{{ mapaUrl }}</p>
+    </contenido>
+    <bottom>
+        <a class="btn btn-danger" ng-click="enlaceModal.hide()" >Cerrar</a>
     </bottom>
 </modal>
 
@@ -762,7 +785,7 @@
     </li>
     <li data-id="partida" data-button="Siguiente" class="raiser">
         <h2>#7 Parada</h2>
-        <p>Una vez que el agente fue entrenado, puede entrar en partida para hacer las pruebas necesarias.</p>
+        <p>Una vez que el agente fue entrenado, puede entrar en "simulación" para hacer las pruebas necesarias.</p>
         <p>Es posible arrastrar el agente para posicionarlo en la posición en que se desea hacer las pruebas.</p>
     </li>
     <li data-id="grafico" data-button="Siguiente paso" class="raiser">
