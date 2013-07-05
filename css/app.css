@@ -170,3 +170,9 @@ a.darken:hover img {
     list-style-type: none;
     margin-left: 0px;
 }
+
+@media (min-width: 1200px) {
+    .row-fluid .span8-5 {
+        width: 68.35897435897436% !important;
+    }
+}

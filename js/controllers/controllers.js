@@ -3,7 +3,8 @@
         'Notifier',
         '$timeout',
         'localStorageService',
-    function($scope, Notifier, $timeout, localStorageService) {
+        '$document',
+    function($scope, Notifier, $timeout, localStorageService, $document) {
 
         /*
         Inicializacion de las propiedades
@@ -241,6 +242,8 @@
         $scope.crearEntorno = function () {
             $scope.entorno = null;
             $scope.entrenamiento.resetearEntrenamiento();
+            $scope.matricesQ = {};
+            $scope.matrizQResguardada = false;
             var config = $scope.configuracionEntorno;
             $scope.entorno = new Entorno(config.filas, config.columnas, config.paredes, config.pozos);
             $scope.entorno.recompensaMeta = $scope.configuracionEntorno.recompensaMeta;
@@ -279,8 +282,8 @@
                     $scope.resultadoUIClass = "span5";
                     break;
                 case 10:
-                    $scope.mapaUIClass = "span9";
-                    $scope.resultadoUIClass = "span3";
+                    $scope.mapaUIClass = "span8-5";
+                    $scope.resultadoUIClass = "span4";
                     break;
                 default:
                     $scope.mapaUIClass = "span8";
@@ -323,6 +326,7 @@
             $scope.entorno.agente.conocimiento.sufrirAmnesia();
             $scope.entorno.agente.entrenado = false;
             $scope.entrenamiento.repeticionActual = 0;
+            $scope.matrizQResguardada = false;
             Notifier.notify({
                 title: 'El agente se ha golpeado!',
                 type: 'info',
@@ -334,6 +338,7 @@
             columna: 0,
             accion: 2,
             episodio: 1,
+            epTemp: 0,
             resultado: [
                 0,
                 0,
@@ -357,6 +362,8 @@
         $scope.consulta.consultarQs = function (i, j) {
             if ($.isNumeric(i) && $.isNumeric(j)) {
                 if ($scope.matrizQResguardada) {
+                    $scope.consulta.fila = i;
+                    $scope.consulta.columna = j;
                     $scope.consulta.resultado = $scope.matricesQ[parseInt($scope.consulta.episodio)][i][j];
                 } else {
                 $scope.consulta.resultado = $scope.entorno.agente.conocimiento.getValoresDeQEnEstado([i,j]);
@@ -365,6 +372,9 @@
             return 'Ingrese todos los valores';
         };
         $scope.matricesQ = [];
+        $scope.usarMatrizQComoConocimiento = function() {
+            $scope.agente.conocimiento.qValuesTable = $scope.matricesQ[parseInt($scope.consulta.episodio)];
+        }
 
 
         /*
@@ -766,7 +776,30 @@
             }
         });
 
+        $scope.activarKeys = function() {
+            if ($scope.matrizQResguardada) {
+                angular.element($document).bind("keydown", function(event) {
+                    //sumar
+                    if (event.which === 107) {
+                        $scope.$apply(function() {
+                            $scope.consulta.episodio++;
+                            $scope.consulta.consultarQs($scope.consulta.fila, $scope.consulta.columna);
+                        });
+                    }
+                    //restar
+                    else if (event.which === 109) {
+                        $scope.$apply(function() {
+                            $scope.consulta.episodio--;
+                            $scope.consulta.consultarQs($scope.consulta.fila, $scope.consulta.columna);
+                        });
+                    }
+                });
+            }
+        }
 
+        $scope.desactivarKeys = function() {
+            angular.element($document).unbind("keydown");
+        }
 
         if (window.location.href.indexOf('=') > 0) {
             $scope.mapaString = window.location.href.substr(window.location.href.indexOf('=') + 1);

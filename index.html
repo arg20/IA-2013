@@ -122,8 +122,8 @@
                 </div>
             </li>
             <li>
-                <span>Matriz Q</span>
-                &nbsp;muestreada
+                <span>Depuración</span>
+                &nbsp;ejecutada
                 <div>
                     <span>{{matrizQResguardada? "Si" : "No" }}</span>
                     <img ng-src="img/{{(matrizQResguardada) && 'circulo-verde' || 'circulo-rojo' }}.png" />
@@ -150,8 +150,8 @@
         <span ng-show="isEntornoCreado()" ng-animate="'fade'" >
             <div class="opciones" style="text-align: center;">Opciones</div>
             <div class="btn-group"  style="margin-top: 5px;" ng-animate="{show:'animated flipInY', hide:'animated fadeOut'}" ng-show="isEntornoCreado()" >
-                <a class="btn btn-large btn-primary" ng-click="editor.show()" id="inspeccionar"  >Inspección</a>
-                <a id="partida" class="btn btn-large btn-danger" href="" ng-click="partida.show()">Simulación</a>
+                <a class="btn btn-large btn-primary" ng-click="editor.show();" id="inspeccionar"  >Inspección</a>
+                <a id="partida" class="btn btn-large btn-danger" href="" ng-click="partida.show(); activarKeys();">Simulación</a>
             </div>
         </span>
     </front>
@@ -331,7 +331,7 @@
                             <input type="text" name="" placeholder="Q-inicial" class="input-mini"
                                    style="margin: 0px;" ng-model="entrenamiento.qlearning.qInicial" tooltip="Inicialización optimista" tooltip-placement="bottom" />
                             <a ><span ng-click="qlearningModal.show()" tooltip="Ayuda" tooltip-placement="right" ><i class="icon-question-sign icon-white"> </i></span></a>
-                            <button type="button" class="btn btn-inverse btn-mini" data-toggle="button" ng-click="toggleResguardo()" >Muestrear Q</button>
+                            <button type="button" class="btn btn-inverse btn-mini" data-toggle="button" ng-click="toggleResguardo()" >Depurar</button>
                         </div>
 
                     </div>
@@ -588,7 +588,7 @@
                 <div class="span9">
                     <!--<p  >Puntero:&nbsp;{{mensajes.editor.posicionHovered()}}.</p>-->
                     <p  >Pincel:&nbsp;{{mensajes.editor.pincelSeleccionado()}}.</p>
-                    <div style="float: left;">
+                    <!--<div style="float: left;">
                         <div style="float:none; ">
                             <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[7]" />
                             <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[0]" />
@@ -607,9 +607,10 @@
                     </div>
 
                     <div ng-show="matrizQResguardada">
-                        <input type="range" name="points" min="0" max="{{ entrenamiento.repeticiones }}" style="background-color: #f6f6f6; width: 100%; margin-top: 10px;" ng-model="consulta.episodio">
-                        <input type="number" name="matrizQ" id="matQ" ng-model="consulta.episodio" />
-                    </div>
+&lt;!&ndash;                        <input type="range" name="points"  style="width: 100%; margin-top: 10px;">&ndash;&gt;
+                        <input type="number" name="matrizQ" id="matQ" ng-model="consulta.episodio" min="0" max="{{ entrenamiento.repeticiones }}" />
+                        <button ng-click="usarMatrizQComoConocimiento()" class="btn btn-inverse" >Usar Matriz</button>
+                    </div>-->
                 </div>
             </div>
         </div>
@@ -626,7 +627,7 @@
             <div ng-class="mapaUIClass">
                 <table class="mapa" style="float: left; margin-right: 10px;">
                     <tr ng-repeat="fila in mapa.mapa track by $index">
-                        <td ng-repeat="columna in fila track by $index" ng-class="columna.nombre" fila="{{$parent.$index}}" columna="{{$index}}" jqyoui-droppable="opcionesCasillero" data-drop="true" ng-model="posicion" >
+                        <td ng-repeat="columna in fila track by $index" ng-class="columna.nombre" fila="{{$parent.$index}}" columna="{{$index}}" jqyoui-droppable="opcionesCasillero" data-drop="true" ng-model="posicion" ng-mouseenter="consulta.consultarQs($parent.$index,$index);" >
                             <img src="img/juego/meta.png" alt="meta" if="isMeta($parent.$index, $index)" style="margin-left:15px; margin-top: -20px;float: left; position: absolute" />
                             <div if="isPosicionInicial($parent.$index, $index)" style="height: 25px;width: 25px; padding-left: 3px; margin-top: 2px" >
                                 <agente widgetvar="entorno.agente.agenteView" mapa="entorno.mapa" jqyoui-draggable="agenteOpciones" data-jqyoui-options="{revert: 'invalid',revertDuration: 150}" data-drag="true" ng-model="agente" > </agente>
@@ -638,7 +639,7 @@
             </div>
 
 
-            <div ng-class="resultadoUIClass">
+            <div ng-class="resultadoUIClass" style="margin-left: 0px;">
                 <p>Recompensa total obtenida: <strong>{{ultimaPartida.recompensaTotal?ultimaPartida.recompensaTotal:'Aún no se ha calculado'}}.</strong></p>
                 <p>Estados por los que pasó:</p>
                 <p ng-hide="ultimaPartida.caminosRecorridos">
@@ -649,12 +650,35 @@
                         <strong>{{ camino }}</strong>: <strong>{{ x }}</strong> {{ x === 1?'vez':'veces' }}.
                     </li>
                 </ul>
+                <div style="float: left;">
+                    <div style="float:none; ">
+                        <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[7]" />
+                        <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[0]" />
+                        <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[1]" />
+                    </div>
+                    <div style="float:none; margin-top: 3px; margin-bottom: 3px;" >
+                        <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[6]" />
+                        <span style="width: 35px;">&nbsp;{{mensajes.editor.posicionHovered()}}</span>
+                        <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[2]" />
+                    </div>
+                    <div style="float:none; ">
+                        <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[5]" />
+                        <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[4]" />
+                        <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[3]" />
+                    </div>
+                </div>
+
+                <div ng-show="matrizQResguardada">
+                    <!--                        <input type="range" name="points"  style="width: 100%; margin-top: 10px;">-->
+                    <input type="number" name="matrizQ" id="matQ" ng-model="consulta.episodio" min="0" max="{{ entrenamiento.repeticiones }}" />
+                    <button ng-click="usarMatrizQComoConocimiento()" class="btn btn-inverse" >Usar Matriz</button>
+                </div>
         </div>
         </div>
     </contenido>
     <bottom>
         <button class="btn btn-inverse" ng-click="moverAgenteAleatoriamente()" aria-hidden="true">Mover Aleatoriamente</button>
-        <button class="btn btn-danger" ng-click="partida.hide()" aria-hidden="true">Cerrar</button>
+        <button class="btn btn-danger" ng-click="partida.hide(); desactivarKeys();" aria-hidden="true">Cerrar</button>
         <button class="btn btn-success" ng-click="jugar()">Iniciar</button>
     </bottom>
 </modal>
