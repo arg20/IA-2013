@@ -202,7 +202,8 @@
                $scope.matricesQ = [];
             },
             preRepeticion: function(rep) {
-                $scope.matricesQ.push($scope.agente.conocimiento.qValuesTable.clone());
+                var mat = $scope.agente.conocimiento.qValuesTable.clone();
+                $scope.matricesQ.push(mat);
             }
 
         }
@@ -299,6 +300,7 @@
             $scope.entorno = null;
             $scope.agente = null;
             $scope.entrenamiento.resetearEntrenamiento();
+            $scope.matrizQResguardada = false;
             Notifier.notify({
                 title: 'Aplicaci\xf3n reseteada',
                 type: 'info',
@@ -331,6 +333,7 @@
             fila: 0,
             columna: 0,
             accion: 2,
+            episodio: 1,
             resultado: [
                 0,
                 0,
@@ -353,15 +356,16 @@
         };
         $scope.consulta.consultarQs = function (i, j) {
             if ($.isNumeric(i) && $.isNumeric(j)) {
-                $scope.consulta.resultado = $scope.entorno.agente.conocimiento.getValoresDeQEnEstado([
-                    i,
-                    j
-                ]);
+                if ($scope.matrizQResguardada) {
+                    $scope.consulta.resultado = $scope.matricesQ[parseInt($scope.consulta.episodio)][i][j];
+                } else {
+                $scope.consulta.resultado = $scope.entorno.agente.conocimiento.getValoresDeQEnEstado([i,j]);
+                }
             }
             return 'Ingrese todos los valores';
         };
         $scope.matricesQ = [];
-        $scope.matricesQIndex = 0;
+
 
         /*
          Consultas al mapa y edicion

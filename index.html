@@ -125,8 +125,8 @@
                 <span>Matriz Q</span>
                 &nbsp;muestreada
                 <div>
-                    <span>No</span>
-                    <img ng-src="img/{{(matrizQResguardad) && 'circulo-verde' || 'circulo-rojo' }}.png"
+                    <span>{{matrizQResguardada? "Si" : "No" }}</span>
+                    <img ng-src="img/{{(matrizQResguardada) && 'circulo-verde' || 'circulo-rojo' }}.png" />
                 </div>
             </li>
         </ul>
@@ -586,7 +586,7 @@
                     <tr><td><a class="darken cuentagotas" style="cursor: url('img/cuentagotas.png') 0 21, crosshair;" ng-click="editor.seleccionarPincel('Pared')"><span tooltip="Pared" tooltip-placement="right" ><img src="img/juego/pared.png" alt=""/></span></a></td></tr>
                 </table></div>
                 <div class="span9">
-                    <p  >Puntero:&nbsp;{{mensajes.editor.posicionHovered()}}.</p>
+                    <!--<p  >Puntero:&nbsp;{{mensajes.editor.posicionHovered()}}.</p>-->
                     <p  >Pincel:&nbsp;{{mensajes.editor.pincelSeleccionado()}}.</p>
                     <div style="float: left;">
                         <div style="float:none; ">
@@ -606,8 +606,10 @@
                         </div>
                     </div>
 
-                    <input type="range" name="points" min="1" max="1000" style="background-color: #f6f6f6; width: 100%; margin-top: 10px;" ng-model="matricesQIndex">
-                    {{ matricesQIndex }}
+                    <div ng-show="matrizQResguardada">
+                        <input type="range" name="points" min="0" max="{{ entrenamiento.repeticiones }}" style="background-color: #f6f6f6; width: 100%; margin-top: 10px;" ng-model="consulta.episodio">
+                        <input type="number" name="matrizQ" id="matQ" ng-model="consulta.episodio" />
+                    </div>
                 </div>
             </div>
         </div>
