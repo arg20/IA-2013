@@ -514,7 +514,6 @@ function Agente(entorno) {
 
             //Yo, el agente, decido la proxima accion que voy a tomar teniendo en cuenta mi politica (greedy, softmax, etc)
             accion = self.politica.seleccionarAccion(self.entorno.getEstado(), numeroDeRepeticion);
-            //System.out.print(accion);
 
             //ya decidi mi accion, ahora se la comunico a mi entorno, es decir, la llevo a cabo.
             estadoNuevo = self.entorno.ejecutarAccion(accion);
@@ -681,7 +680,7 @@ function PoliticaGreedy(agente, epsilon, epsilonFinal, step) {
 
     this.seleccionarAccion = function(estado, iteracion) {
 
-
+        //Si epsilon varia, la actualizacion de epsilon se hace aca
         if (iteracion % self.step === 0 && iteracion !== self.ultimaIteracionActualizada ) {
            self.ultimaIteracionActualizada = iteracion;
            self.epsilon += self.variacionEpsilon;
@@ -698,7 +697,7 @@ function PoliticaGreedy(agente, epsilon, epsilonFinal, step) {
 
         //Si  Math.random() > probabilidadAleatoria entonces usar el conocimiento adquirido
         if (Math.random() > self.epsilon) {
-
+            //si entro aca, estoy haciendo explotacion
             for (var accion = 0; accion < valoresDeQEnEstado.length; accion++) {
 
                 if (valoresDeQEnEstado[accion] > maxQ) {
@@ -880,19 +879,19 @@ function Partida(entorno) {
         while ( !entorno.isEstadoFinal() && (!flagVueltasEnCiculos || movimientos > 0 )) {
             //Pregunto al conocimiento del agente cual es la mejor accion posible en el estado
             var accion = entorno.agente.conocimiento.getMejorAccionPosible(self.estado);
-            //si no es valida (en el caso de que el agente no conozca bien el mapa, elijo alguna valida aleatoriamente
+            //si no es valida (en el caso de que el agente no conozca bien el mapa), elijo alguna valida aleatoriamente
             if (!entorno.isAccionValida(accion)) {
                 var accionesValidas = entorno.mapa.getAccionesValidas(self.estado[0], self.estado[1]);
                 accion = accionesValidas[getRandomInt(0,(accionesValidas.length -1))];
             }
             //resguardo la accion en la lista de acciones tomadas
             resultado.acciones.push(accion);
-            /* Callback preaccion */                            if ( typeof callbacks.preAccion === "function") {
+                                                                                                                        /* Callback preaccion */if ( typeof callbacks.preAccion === "function") {
                 callbacks.preAccion();
             }
             //ejecuto la accion contra el entorno, me devuelve el estado al que pase
             self.estado = entorno.ejecutarAccion(accion);
-            /* Callback postaccion */                           if ( typeof callbacks.postAccion === "function") {
+                                                                                                                        /* Callback postaccion */                           if ( typeof callbacks.postAccion === "function") {
                 callbacks.postAccion();
             }
             resultado.recompensas.push(entorno.recompensa);

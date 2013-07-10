@@ -586,31 +586,8 @@
                     <tr><td><a class="darken cuentagotas" style="cursor: url('img/cuentagotas.png') 0 21, crosshair;" ng-click="editor.seleccionarPincel('Pared')"><span tooltip="Pared" tooltip-placement="right" ><img src="img/juego/pared.png" alt=""/></span></a></td></tr>
                 </table></div>
                 <div class="span9">
-                    <!--<p  >Puntero:&nbsp;{{mensajes.editor.posicionHovered()}}.</p>-->
                     <p  >Pincel:&nbsp;{{mensajes.editor.pincelSeleccionado()}}.</p>
-                    <!--<div style="float: left;">
-                        <div style="float:none; ">
-                            <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[7]" />
-                            <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[0]" />
-                            <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[1]" />
-                        </div>
-                        <div style="float:none; margin-top: 3px; margin-bottom: 3px;" >
-                            <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[6]" />
-                            <span style="width: 35px;">&nbsp;{{mensajes.editor.posicionHovered()}}</span>
-                            <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[2]" />
-                        </div>
-                        <div style="float:none; ">
-                            <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[5]" />
-                            <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[4]" />
-                            <input type="text"   style="width: 35px; margin: 0px; padding: 1px; font-size: 11px;" ng-model="consulta.resultado[3]" />
-                        </div>
-                    </div>
-
-                    <div ng-show="matrizQResguardada">
-&lt;!&ndash;                        <input type="range" name="points"  style="width: 100%; margin-top: 10px;">&ndash;&gt;
-                        <input type="number" name="matrizQ" id="matQ" ng-model="consulta.episodio" min="0" max="{{ entrenamiento.repeticiones }}" />
-                        <button ng-click="usarMatrizQComoConocimiento()" class="btn btn-inverse" >Usar Matriz</button>
-                    </div>-->
+                    <button class="btn btn-danger" ng-click="editor.pintarTodo()">Pintar todo!</button>
                 </div>
             </div>
         </div>
@@ -627,7 +604,7 @@
             <div ng-class="mapaUIClass">
                 <table class="mapa" style="float: left; margin-right: 10px;">
                     <tr ng-repeat="fila in mapa.mapa track by $index">
-                        <td ng-repeat="columna in fila track by $index" ng-class="columna.nombre" fila="{{$parent.$index}}" columna="{{$index}}" jqyoui-droppable="opcionesCasillero" data-drop="true" ng-model="posicion" ng-mouseenter="consulta.consultarQs($parent.$index,$index);" >
+                        <td ng-repeat="columna in fila track by $index" ng-class="columna.nombre" fila="{{$parent.$index}}" columna="{{$index}}" jqyoui-droppable="opcionesCasillero" data-drop="true" ng-model="posicion" ng-mouseenter="mensajes.editor.mouseSobre.x = $parent.$index; mensajes.editor.mouseSobre.y = $index; consulta.consultarQs($parent.$index,$index);" >
                             <img src="img/juego/meta.png" alt="meta" if="isMeta($parent.$index, $index)" style="margin-left:15px; margin-top: -20px;float: left; position: absolute" />
                             <div if="isPosicionInicial($parent.$index, $index)" style="height: 25px;width: 25px; padding-left: 3px; margin-top: 2px" >
                                 <agente widgetvar="entorno.agente.agenteView" mapa="entorno.mapa" jqyoui-draggable="agenteOpciones" data-jqyoui-options="{revert: 'invalid',revertDuration: 150}" data-drag="true" ng-model="agente" > </agente>

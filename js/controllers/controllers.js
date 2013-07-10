@@ -410,6 +410,18 @@
                         text: 'Al poner el obstaculo allí, el mapa dejará de ser válido. Esta acción no está permitida.'
                     });
                 }
+            },
+            pintarTodo: function() {
+                var nuevoTipo = TipoCamino.getTipoFromNombre(this.pincelSeleccionado);
+                if (nuevoTipo.nombre !== "POZO" || nuevoTipo.nombre !== "PARED" ) {
+                    var mapa = $scope.entorno.mapa;
+                    for (var i = 0; i < mapa.filas; i++) {
+                        for (var j = 0; j < mapa.columnas; j++) {
+                            mapa.setTipoCamino(nuevoTipo, i, j);
+                        }
+                    }
+                }
+
             }
         };
         $scope.moverAgenteAleatoriamente = function () {
@@ -780,14 +792,14 @@
             if ($scope.matrizQResguardada) {
                 angular.element($document).bind("keydown", function(event) {
                     //sumar
-                    if (event.which === 107) {
+                    if (event.which === 107 || event.which === 87) {
                         $scope.$apply(function() {
                             $scope.consulta.episodio++;
                             $scope.consulta.consultarQs($scope.consulta.fila, $scope.consulta.columna);
                         });
                     }
                     //restar
-                    else if (event.which === 109) {
+                    else if (event.which === 109 || event.which === 83) {
                         $scope.$apply(function() {
                             $scope.consulta.episodio--;
                             $scope.consulta.consultarQs($scope.consulta.fila, $scope.consulta.columna);
